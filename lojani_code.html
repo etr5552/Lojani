@@ -1,0 +1,2621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lojani</title>
+  <style>
+    /* Universal Box-Sizing for better layout control */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    /* Shared Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      /* Use min-height to ensure it takes full height but can expand */
+      background-color: #e0f2f7;
+      overflow: auto;
+      /* Allow body scroll if content is too large, but individual elements should manage their overflow */
+    }
+
+    .container {
+      width: 90%;
+      /* Use percentage for responsiveness */
+      max-width: 450px;
+      /* Set a max-width to prevent it from becoming too wide on large screens */
+      background: #ffffff;
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 20px auto;
+      /* Add vertical margin for spacing */
+      position: absolute;
+      transition: all 0.5s ease-in-out;
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+    }
+
+    .container.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+      position: relative;
+      /* Make active container relative for normal flow */
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    h2 {
+      color: #007bff;
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cce7ee;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 600;
+      margin-top: 10px;
+      transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+    }
+
+    button:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    .link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #007bff;
+      cursor: pointer;
+      font-size: 15px;
+      transition: color 0.3s ease;
+    }
+
+    .link:hover {
+      color: #0056b3;
+      text-decoration: underline;
+    }
+
+    .messenger-container {
+      margin-top: 25px;
+      background-color: #f7f7f7;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .messages {
+      height: 250px;
+      /* Fixed height with overflow */
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      display: flex;
+      align-items: flex-start;
+      position: relative;
+      animation: fadeInMessage 0.5s ease-out;
+    }
+
+    .profile-pic {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 2px solid #eee;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .message-content {
+      flex: 1;
+      margin-left: 12px;
+      background-color: #e6f7ff;
+      padding: 10px 15px;
+      border-radius: 15px 15px 15px 0px;
+      max-width: 80%;
+      position: relative;
+      word-wrap: break-word;
+    }
+
+    .message span {
+      font-weight: 600;
+      color: #007bff;
+      margin-right: 8px;
+    }
+
+    .message-time {
+      color: #888;
+      font-size: 0.75em;
+      margin-left: 5px;
+    }
+
+    .message-text {
+      margin: 5px 0 0 0;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .message.current-user .message-content {
+      background-color: #dcf8c6;
+      border-radius: 15px 15px 0px 15px;
+      margin-left: auto;
+      margin-right: 12px;
+    }
+
+    .message.current-user .profile-pic {
+      order: 2;
+      margin-left: 12px;
+      margin-right: 0;
+    }
+
+    .message.current-user .message-header {
+      justify-content: flex-end;
+    }
+
+    .message.current-user span {
+      color: #28a745;
+    }
+
+    .typing-indicator {
+      font-style: italic;
+      color: #777;
+      height: 20px;
+      text-align: center;
+      margin-bottom: 10px;
+      animation: pulse 1.5s infinite ease-in-out;
+    }
+
+    #messageInput {
+      margin-top: 10px;
+      border-radius: 25px;
+      padding-right: 50px;
+    }
+
+    /* Modal Styles */
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 1000;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalPopIn 0.3s ease-out forwards;
+      /* forwards keeps the end state of the animation */
+    }
+
+    .modal.closing {
+      animation: modalPopOut 0.3s ease-in forwards;
+    }
+
+    #warningModal,
+    #banModal,
+    #loginErrorModal,
+    #spamWarningModal,
+    #spamBanModal,
+    #deleteAccountModal,
+    #reportUserModal,
+    #alertDialog,
+    #addFakeUserModal,
+    #searchUserModal,
+    #changePasswordModal,
+    #adminModeModal,
+    #blockedUsersModal,
+    #forgotPasswordModal,
+    #deleteDataModal { /* Added deleteDataModal */
+      text-align: center;
+    }
+
+    #warningModal h2,
+    #banModal h2,
+    #loginErrorModal h2,
+    #spamWarningModal h2,
+    #spamBanModal h2,
+    #deleteAccountModal h2,
+    #reportUserModal h2 {
+      color: #d9534f;
+    }
+
+    #alertDialog h2,
+    #addFakeUserModal h2,
+    #searchUserModal h2,
+    #changePasswordModal h2,
+    #adminModeModal h2,
+    #blockedUsersModal h2,
+    #forgotPasswordModal h2,
+    #deleteDataModal h2 { /* Added deleteDataModal */
+      color: #007bff;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      z-index: 999;
+      animation: fadeInOverlay 0.3s ease-out;
+    }
+
+    .profile-info {
+      margin-top: 15px;
+    }
+
+    .profile-info label {
+      font-weight: bold;
+    }
+
+    .warning-button {
+      background-color: #d9534f;
+      margin-top: 10px;
+    }
+
+    .warning-button:hover {
+      background-color: #c9302c;
+    }
+
+    .delete-button {
+      background-color: #dc3545;
+      margin-top: 15px;
+    }
+
+    .delete-button:hover {
+      background-color: #c82333;
+    }
+
+    #deleteAccountModal .form-group {
+      text-align: left;
+      margin: 15px 0;
+    }
+
+    #deleteAccountModal input {
+      width: 100%;
+    }
+
+    /* Message Options Dropdown */
+    .message-options {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .message-options-dropdown {
+      position: absolute;
+      top: 25px;
+      right: 0;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 10;
+      min-width: 120px;
+    }
+
+    .message-options-dropdown button {
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 8px 10px;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .message-options-dropdown button:hover {
+      background-color: #f0f0f0;
+    }
+
+    /* Keyframe Animations */
+    @keyframes fadeInMessage {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 0.7;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.7;
+      }
+    }
+
+    @keyframes modalPopIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -40%) scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    @keyframes modalPopOut {
+      from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: translate(-50%, -60%) scale(0.9);
+      }
+    }
+
+    @keyframes fadeInOverlay {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Adjustments for profile info */
+    .profile-info h3 {
+      color: #007bff;
+      margin-top: 25px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .profile-info label {
+      font-weight: 600;
+      color: #555;
+      margin-top: 10px;
+      display: block;
+    }
+
+    .profile-info p {
+      margin: 5px 0 15px 0;
+      color: #666;
+      padding-left: 10px;
+      border-left: 3px solid #eee;
+    }
+
+    /* Custom scrollbar (Webkit browsers) */
+    .messages::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .messages::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .messages::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+    }
+
+    .messages::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    #searchResults {
+      text-align: left;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .search-result-item {
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .search-result-item:hover {
+      background-color: #eaf6fc;
+    }
+
+    .search-result-item h4 {
+      margin: 0 0 5px 0;
+      color: #007bff;
+    }
+
+    .search-result-item p {
+      margin: 0;
+      color: #555;
+      font-size: 0.9em;
+    }
+
+    #blockedUsersList {
+      text-align: left;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .blocked-user-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+    }
+
+    .blocked-user-item span {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .blocked-user-item button {
+      width: auto;
+      padding: 5px 10px;
+      margin: 0;
+      font-size: 0.9em;
+    }
+
+    /* Styles for code snippets in modals */
+    #deleteDataModal code {
+        display: block;
+        background-color: #f0f0f0;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 10px 0;
+        text-align: left;
+        white-space: pre-wrap; /* Ensures long lines wrap */
+        word-break: break-all; /* Breaks words if necessary */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="loginScreen">
+    <h2>Login</h2>
+    <div class="form-group">
+      <label for="loginUsername">Username</label>
+      <input type="text" id="loginUsername" placeholder="Enter your username">
+    </div>
+    <div class="form-group">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter your password">
+    </div>
+    <button onclick="login()">Login</button>
+    <div class="link" onclick="showForgotPassword()">Forgot Password?</div>
+    <div class="link" onclick="showCreateAccount()">Create an account</div>
+  </div>
+
+  <div class="container hidden" id="createAccountScreen">
+    <h2>Create Account</h2>
+    <div class="form-group">
+      <label for="createUsername">Username</label>
+      <input type="text" id="createUsername" placeholder="Choose a username">
+    </div>
+    <div class="form-group">
+      <label for="createPassword">Password</label>
+      <input type="password" id="createPassword" placeholder="Choose a password">
+    </div>
+    <!-- Security Question Fields Start -->
+    <div class="form-group">
+      <label for="securityQuestion">Security Question</label>
+      <input type="text" id="securityQuestion" placeholder="e.g., What is your mother's maiden name?">
+    </div>
+    <div class="form-group">
+      <label for="securityAnswer">Security Answer</label>
+      <input type="password" id="securityAnswer" placeholder="Enter your answer">
+    </div>
+    <!-- Security Question Fields End -->
+    <div class="form-group">
+      <input type="checkbox" id="agreeCheckbox">
+      <label for="agreeCheckbox">I agree to the <a href="javascript:void(0)" onclick="showTermsAndConditions()">Terms and Conditions</a></label>
+    </div>
+    <button onclick="createAccount()">Create Account</button>
+    <div class="link" onclick="showLogin()">Already have an account? Login</div>
+  </div>
+
+  <div class="container hidden" id="messengerScreen">
+    <h2>Welcome, <span id="currentUser"></span>!</h2>
+    <button onclick="logout()">Logout</button>
+    <div class="messenger-container">
+      <div class="messages" id="messages"></div>
+      <div class="typing-indicator" id="typingIndicator"></div>
+      <input type="text" id="messageInput" placeholder="Type a message..." oninput="showTypingIndicator()" onblur="hideTypingIndicator()">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <button onclick="openSettings()">Settings</button>
+    <button onclick="addFakeUser()">Add Fake User</button>
+    <button onclick="openSearchUserModal()">Search User</button>
+    <button onclick="openBlockedUsersModal()">Blocked Users</button> <div>
+      <select id="userSelect" onchange="switchUser()">
+        <option value="">Select User</option>
+      </select>
+    </div>
+    <div class="profile-info">
+      <h3>Profile</h3>
+      <div>
+        <label>About Me:</label>
+        <p id="aboutMeText">No bio set.</p>
+        <label>Country:</label>
+        <p id="countryText">No country selected.</p>
+        <label>Join Date:</label>
+        <p id="joinDateText">Not available.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay"></div>
+  <div id="settingsModal" class="modal">
+    <h2>Settings</h2>
+    <label for="changeName">Change Username:</label>
+    <input type="text" id="changeName" placeholder="Enter new name">
+    <label for="aboutMeInput">About Me:</label>
+    <textarea id="aboutMeInput" placeholder="Enter a short bio..."></textarea>
+    <label for="profilePicInput">Change Profile Picture:</label>
+    <input type="file" id="profilePicInput" accept="image/*">
+
+    <label for="countrySelect">Select Your Country:</label>
+<select id="countrySelect">
+  <option value="">Select Country</option>
+<option value="Afghanistan">🇦🇫 Afghanistan</option>
+<option value="Aland Islands">🇦🇽 Åland Islands</option>
+<option value="Albania">🇦🇱 Albania</option>
+<option value="Algeria">🇩🇿 Algeria</option>
+<option value="American Samoa">🇦🇸 American Samoa</option>
+<option value="Andorra">🇦🇩 Andorra</option>
+<option value="Angola">🇦🇴 Angola</option>
+<option value="Anguilla">🇦🇮 Anguilla</option>
+<option value="Antarctica">🇦🇶 Antarctica</option>
+<option value="Antigua and Barbuda">🇦🇬 Antigua and Barbuda</option>
+<option value="Argentina">🇦🇷 Argentina</option>
+<option value="Armenia">🇦🇲 Armenia</option>
+<option value="Aruba">🇦🇼 Aruba</option>
+<option value="Australia">🇦🇺 Australia</option>
+<option value="Austria">🇦🇹 Austria</option>
+<option value="Azerbaijan">🇦🇿 Azerbaijan</option>
+<option value="Bahamas">🇧🇸 Bahamas</option>
+<option value="Bahrain">🇧🇭 Bahrain</option>
+<option value="Bangladesh">🇧🇩 Bangladesh</option>
+<option value="Barbados">🇧🇧 Barbados</option>
+<option value="Belarus">🇧🇾 Belarus</option>
+<option value="Belgium">🇧🇪 Belgium</option>
+<option value="Belize">🇧🇿 Belize</option>
+<option value="Benin">🇧🇯 Benin</option>
+<option value="Bermuda">🇧🇲 Bermuda</option>
+<option value="Bhutan">🇧🇹 Bhutan</option>
+<option value="Bolivia">🇧🇴 Bolivia</option>
+<option value="Bosnia and Herzegovina">🇧🇦 Bosnia and Herzegovina</option>
+<option value="Botswana">🇧🇼 Botswana</option>
+<option value="Brazil">🇧🇷 Brazil</option>
+<option value="British Indian Ocean Territory">🇮🇴 British Indian Ocean Territory</option>
+<option value="British Virgin Islands">🇻🇬 British Virgin Islands</option>
+<option value="Brunei">🇧🇳 Brunei</option>
+<option value="Bulgaria">🇧🇬 Bulgaria</option>
+<option value="Burkina Faso">🇧🇫 Burkina Faso</option>
+<option value="Burundi">🇧🇮 Burundi</option>
+<option value="Cambodia">🇰🇭 Cambodia</option>
+<option value="Cameroon">🇨🇲 Cameroon</option>
+<option value="Canada">🇨🇦 Canada</option>
+<option value="Cape Verde">🇨🇻 Cape Verde</option>
+<option value="Cayman Islands">🇰🇾 Cayman Islands</option>
+<option value="Central African Republic">🇨🇫 Central African Republic</option>
+<option value="Chad">🇹🇩 Chad</option>
+<option value="Chile">🇨🇱 Chile</option>
+<option value="China">🇨🇳 China</option>
+<option value="Christmas Island">🇨🇽 Christmas Island</option>
+<option value="Cocos Islands">🇨🇨 Cocos (Keeling) Islands</option>
+<option value="Colombia">🇨🇴 Colombia</option>
+<option value="Comoros">🇰🇲 Comoros</option>
+<option value="Congo">🇨🇬 Congo</option>
+<option value="Democratic Republic of the Congo">🇨🇩 Democratic Republic of the Congo</option>
+<option value="Cook Islands">🇨🇰 Cook Islands</option>
+<option value="Costa Rica">🇨🇷 Costa Rica</option>
+<option value="Croatia">🇭🇷 Croatia</option>
+<option value="Cuba">🇨🇺 Cuba</option>
+<option value="Curacao">🇨🇼 Curacao</option>
+<option value="Cyprus">🇨🇾 Cyprus</option>
+<option value="Czech Republic">🇨🇿 Czech Republic</option>
+<option value="Denmark">🇩🇰 Denmark</option>
+<option value="Djibouti">🇩🇯 Djibouti</option>
+<option value="Dominica">🇩🇲 Dominica</option>
+<option value="Dominican Republic">🇩🇴 Dominican Republic</option>
+<option value="Ecuador">🇪🇨 Ecuador</option>
+<option value="Egypt">🇪🇬 Egypt</option>
+<option value="El Salvador">🇸🇻 El Salvador</option>
+<option value="Equatorial Guinea">🇬🇶 Equatorial Guinea</option>
+<option value="Eritrea">🇪🇷 Eritrea</option>
+<option value="Estonia">🇪🇪 Estonia</option>
+<option value="Ethiopia">🇪🇹 Ethiopia</option>
+<option value="Falkland Islands">🇫🇰 Falkland Islands</option>
+<option value="Faroe Islands">🇫🇴 Faroe Islands</option>
+<option value="Fiji">🇫🇯 Fiji</option>
+<option value="Finland">🇫🇮 Finland</option>
+<option value="France">🇫🇷 France</option>
+<option value="French Guiana">🇬🇫 French Guiana</option>
+<option value="French Polynesia">🇵🇫 French Polynesia</option>
+<option value="French Southern Territories">🇹🇫 French Southern Territories</option>
+<option value="Gabon">🇬🇦 Gabon</option>
+<option value="Gambia">🇬🇲 Gambia</option>
+<option value="Georgia">🇬🇪 Georgia</option>
+<option value="Germany">🇩🇪 Germany</option>
+<option value="Ghana">🇬🇭 Ghana</option>
+<option value="Gibraltar">🇬🇮 Gibraltar</option>
+<option value="Greece">🇬🇷 Greece</option>
+<option value="Greenland">🇬🇱 Greenland</option>
+<option value="Grenada">🇬🇩 Grenada</option>
+<option value="Guadeloupe">🇬🇵 Guadeloupe</option>
+<option value="Guam">🇬🇺 Guam</option>
+<option value="Guatemala">🇬🇹 Guatemala</option>
+<option value="Guernsey">🇬🇬 Guernsey</option>
+<option value="Guinea">🇬🇳 Guinea</option>
+<option value="Guinea-Bissau">🇬🇼 Guinea-Bissau</option>
+<option value="Guyana">🇬🇾 Guyana</option>
+<option value="Haiti">🇭🇹 Haiti</option>
+<option value="Honduras">🇭🇳 Honduras</option>
+<option value="Hong Kong">🇭🇰 Hong Kong</option>
+<option value="Hungary">🇭🇺 Hungary</option>
+<option value="Iceland">🇮🇸 Iceland</option>
+<option value="India">🇮🇳 India</option>
+<option value="Indonesia">🇮🇩 Indonesia</option>
+<option value="Iran">🇮🇷 Iran</option>
+<option value="Iraq">🇮🇶 Iraq</option>
+<option value="Ireland">🇮🇪 Ireland</option>
+<option value="Isle of Man">🇮🇲 Isle of Man</option>
+<option value="Israel">🇮🇱 Israel</option>
+<option value="Italy">🇮🇹 Italy</option>
+<option value="Jamaica">🇯🇲 Jamaica</option>
+<option value="Japan">🇯🇵 Japan</option>
+<option value="Jersey">🇯🇪 Jersey</option>
+<option value="Jordan">🇯🇴 Jordan</option>
+<option value="Kazakhstan">🇰🇿 Kazakhstan</option>
+<option value="Kenya">🇰🇪 Kenya</option>
+<option value="Kiribati">🇰🇮 Kiribati</option>
+<option value="Kosovo">🇽🇰 Kosovo</option>
+<option value="Kuwait">🇰🇼 Kuwait</option>
+<option value="Kyrgyzstan">🇰🇬 Kyrgyzstan</option>
+<option value="Laos">🇱🇦 Laos</option>
+<option value="Latvia">🇱🇻 Latvia</option>
+<option value="Lebanon">🇱🇧 Lebanon</option>
+<option value="Lesotho">🇱🇸 Lesotho</option>
+<option value="Liberia">🇱🇷 Liberia</option>
+<option value="Libya">🇱🇾 Libya</option>
+<option value="Liechtenstein">🇱🇮 Liechtenstein</option>
+<option value="Lithuania">🇱🇹 Lithuania</option>
+<option value="Luxembourg">🇱🇺 Luxembourg</option>
+<option value="Macau">🇲🇴 Macau</option>
+<option value="Madagascar">🇲🇬 Madagascar</option>
+<option value="Malawi">🇲🇼 Malawi</option>
+<option value="Malaysia">🇲🇾 Malaysia</option>
+<option value="Maldives">🇲🇻 Maldives</option>
+<option value="Mali">🇲🇱 Mali</option>
+<option value="Malta">🇲🇹 Malta</option>
+<option value="Marshall Islands">🇲🇭 Marshall Islands</option>
+<option value="Martinique">🇲🇶 Martinique</option>
+<option value="Mauritania">🇲🇷 Mauritania</option>
+<option value="Mauritius">🇲🇺 Mauritius</option>
+<option value="Mayotte">🇾🇹 Mayotte</option>
+<option value="Mexico">🇲🇽 Mexico</option>
+<option value="Micronesia">🇫🇲 Micronesia</option>
+<option value="Moldova">🇲🇩 Moldova</option>
+<option value="Monaco">🇲🇨 Monaco</option>
+<option value="Mongolia">🇲🇳 Mongolia</option>
+<option value="Montenegro">🇲🇪 Montenegro</option>
+<option value="Montserrat">🇲🇸 Montserrat</option>
+<option value="Morocco">🇲🇦 Morocco</option>
+<option value="Mozambique">🇲🇿 Mozambique</option>
+<option value="Myanmar">🇲🇲 Myanmar</option>
+<option value="Namibia">🇳🇦 Namibia</option>
+<option value="Nauru">🇳🇷 Nauru</option>
+<option value="Nepal">🇳🇵 Nepal</option>
+<option value="Netherlands">🇳🇱 Netherlands</option>
+<option value="New Caledonia">🇳🇨 New Caledonia</option>
+<option value="New Zealand">🇳🇿 New Zealand</option>
+<option value="Nicaragua">🇳🇮 Nicaragua</option>
+<option value="Niger">🇳🇪 Niger</option>
+<option value="Nigeria">🇳🇬 Nigeria</option>
+<option value="Niue">🇳🇺 Niue</option>
+<option value="Norfolk Island">🇳🇫 Norfolk Island</option>
+<option value="North Korea">🇰🇵 North Korea</option>
+<option value="North Macedonia">🇲🇰 North Macedonia</option>
+<option value="Northern Mariana Islands">🇲🇵 Northern Mariana Islands</option>
+<option value="Norway">🇳🇴 Norway</option>
+<option value="Oman">🇴🇲 Oman</option>
+<option value="Pakistan">🇵🇰 Pakistan</option>
+<option value="Palau">🇵🇼 Palau</option>
+<option value="Palestine">🇵🇸 Palestine</option>
+<option value="Panama">🇵🇦 Panama</option>
+<option value="Papua New Guinea">🇵🇬 Papua New Guinea</option>
+<option value="Paraguay">🇵🇾 Paraguay</option>
+<option value="Peru">🇵🇪 Peru</option>
+<option value="Philippines">🇵🇭 Philippines</option>
+<option value="Pitcairn Islands">🇵🇳 Pitcairn Islands</option>
+<option value="Poland">🇵🇱 Poland</option>
+<option value="Portugal">🇵🇹 Portugal</option>
+<option value="Puerto Rico">🇵🇷 Puerto Rico</option>
+<option value="Qatar">🇶🇦 Qatar</option>
+<option value="Romania">🇷🇴 Romania</option>
+<option value="Russia">🇷🇺 Russia</option>
+<option value="Rwanda">🇷🇼 Rwanda</option>
+<option value="Réunion">🇷🇪 Réunion</option>
+<option value="Saint Barthelemy">🇧🇱 Saint Barthelemy</option>
+<option value="Saint Helena">🇸🇭 Saint Helena</option>
+<option value="Saint Kitts and Nevis">🇰🇳 Saint Kitts and Nevis</option>
+<option value="Saint Lucia">🇱🇨 Saint Lucia</option>
+<option value="Saint Martin">🇲🇫 Saint Martin</option>
+<option value="Saint Pierre and Miquelon">🇵🇲 Saint Pierre and Miquelon</option>
+<option value="Saint Vincent and the Grenadines">🇻🇨 Saint Vincent and the Grenadines</option>
+<option value="Samoa">🇼🇸 Samoa</option>
+<option value="San Marino">🇸🇲 San Marino</option>
+<option value="Sao Tome and Principe">🇸🇹 Sao Tome and Principe</option>
+<option value="Saudi Arabia">🇸🇦 Saudi Arabia</option>
+<option value="Senegal">🇸🇳 Senegal</option>
+<option value="Serbia">🇷🇸 Serbia</option>
+<option value="Seychelles">🇸🇨 Seychelles</option>
+<option value="Sierra Leone">🇸🇱 Sierra Leone</option>
+<option value="Singapore">🇸🇬 Singapore</option>
+<option value="Sint Maarten">🇸🇽 Sint Maarten</option>
+<option value="Slovakia">🇸🇰 Slovakia</option>
+<option value="Slovenia">🇸🇮 Slovenia</option>
+<option value="Solomon Islands">🇸🇧 Solomon Islands</option>
+<option value="Somalia">🇸🇴 Somalia</option>
+<option value="South Africa">🇿🇦 South Africa</option>
+<option value="South Georgia and the South Sandwich Islands">🇬🇸 South Georgia and the South Sandwich Islands</option>
+<option value="South Korea">🇰🇷 South Korea</option>
+<option value="South Sudan">🇸🇸 South Sudan</option>
+<option value="Spain">🇪🇸 Spain</option>
+<option value="Sri Lanka">🇱🇰 Sri Lanka</option>
+<option value="Sudan">🇸🇩 Sudan</option>
+<option value="Suriname">🇸🇷 Suriname</option>
+<option value="Svalbard and Jan Mayen">🇸🇯 Svalbard and Jan Mayen</option>
+<option value="Sweden">🇸🇪 Sweden</option>
+<option value="Switzerland">🇨🇭 Switzerland</option>
+<option value="Syria">🇸🇾 Syria</option>
+<option value="Taiwan">🇹🇼 Taiwan</option>
+<option value="Tajikistan">🇹🇯 Tajikistan</option>
+<option value="Tanzania">🇹🇿 Tanzania</option>
+<option value="Thailand">🇹🇭 Thailand</option>
+<option value="Timor-Leste">🇹🇱 Timor-Leste</option>
+<option value="Togo">🇹🇬 Togo</option>
+<option value="Tokelau">🇹🇰 Tokelau</option>
+<option value="Tonga">🇹🇴 Tonga</option>
+<option value="Trinidad and Tobago">🇹🇹 Trinidad and Tobago</option>
+<option value="Tunisia">🇹🇳 Tunisia</option>
+<option value="Turkey">🇹🇷 Turkey</option>
+<option value="Turkmenistan">🇹🇲 Turkmenistan</option>
+<option value="Turks and Caicos Islands">🇹🇨 Turks and Caicos Islands</option>
+<option value="Tuvalu">🇹🇻 Tuvalu</option>
+<option value="Uganda">🇺🇬 Uganda</option>
+<option value="Ukraine">🇺🇦 Ukraine</option>
+<option value="United Arab Emirates">🇦🇪 United Arab Emirates</option>
+<option value="United Kingdom">🇬🇧 United Kingdom</option>
+<option value="United States">🇺🇸 United States</option>
+<option value="Uruguay">🇺🇾 Uruguay</option>
+<option value="Uzbekistan">🇺🇿 Uzbekistan</option>
+<option value="Vanuatu">🇻🇺 Vanuatu</option>
+<option value="Vatican City">🇻🇦 Vatican City</option>
+<option value="Venezuela">🇻🇪 Venezuela</option>
+<option value="Vietnam">🇻🇳 Vietnam</option>
+<option value="Wallis and Futuna">🇼🇫 Wallis and Futuna</option>
+<option value="Western Sahara">🇪🇭 Western Sahara</option>
+<option value="Yemen">🇾🇪 Yemen</option>
+<option value="Zambia">🇿🇲 Zambia</option>
+<option value="Zimbabwe">🇿🇼 Zimbabwe</option>
+
+</select>
+
+    <label for="joinDateInput">Change Join Date:</label>
+    <input type="date" id="joinDateInput">
+
+    <button onclick="saveSettings()">Save</button>
+    <button onclick="showChangePasswordModal()">Change Password</button>
+    <button onclick="toggleAdminMode()">Admin Account Mode</button>
+    <button onclick="closeSettings()">Close</button>
+    <button onclick="showDeleteAccountModal()" class="delete-button">Delete Account</button>
+    <button onclick="showDeleteDataModal()">How to delete Lojani data</button> <!-- New button added here -->
+  
+<hr style="margin: 20px 0;">
+<h3>📦 Backup & Restore</h3>
+<button onclick="downloadBackup()">Download Backup</button><br><br>
+<label for="restoreInput"><strong>Restore Backup:</strong></label><br>
+<input type="file" id="restoreInput" accept=".json">
+<button onclick="restoreBackup()">Restore</button>
+
+</div>
+
+  <div id="deleteAccountModal" class="modal">
+    <h2>🗑️ Delete Account</h2>
+    <p><strong>Are you SURE that you want to delete your account?</strong></p>
+    <p>This is permanent and the account cannot be restored.</p>
+    <div class="form-group">
+      <label for="deletePasswordInput">Type your password below to confirm that it's you:</label>
+      <input type="password" id="deletePasswordInput" placeholder="Enter your password">
+    </div>
+    <button onclick="deleteAccount()" class="warning-button">Delete</button>
+    <button onclick="closeDeleteAccountModal()">Cancel</button>
+  </div>
+
+  <!-- New Modal for Delete Data Instructions -->
+  <div id="deleteDataModal" class="modal hidden">
+    <h2>How to Delete Lojani Data</h2>
+    <p>To delete all Lojani data stored in your browser, you need to execute these 3 commands in the console.</p>
+    <p>You can access the console by right-clicking on the page, selecting "Inspect", and then clicking on the "Console" tab.</p>
+    <p>Commands:</p>
+    <code>localStorage.clear();</code>
+    <code>sessionStorage.clear();</code>
+    <code>document.cookie.split(";").forEach(function(cookie) {
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+});</code>
+    <button onclick="closeDeleteDataModal()">Close</button>
+  </div>
+
+
+  <div id="changePasswordModal" class="modal hidden">
+    <h2>Change Password</h2>
+    <div class="form-group">
+      <label for="currentPassword">Current Password:</label>
+      <input type="password" id="currentPassword">
+    </div>
+    <div class="form-group">
+      <label for="newPassword">New Password:</label>
+      <input type="password" id="newPassword">
+    </div>
+    <div class="form-group">
+      <label for="confirmNewPassword">Confirm New Password:</label>
+      <input type="password" id="confirmNewPassword">
+    </div>
+    <button onclick="saveNewPassword()">Save Password</button>
+    <button onclick="closeChangePasswordModal()">Cancel</button>
+  </div>
+
+  <div id="forgotPasswordModal" class="modal hidden">
+    <h2>Forgot Password</h2>
+    <div class="form-group">
+      <label for="forgotPasswordUsername">Enter your username:</label>
+      <input type="text" id="forgotPasswordUsername" placeholder="Enter your username">
+    </div>
+    <!-- Security Question Fields for Forgot Password Start -->
+    <div class="form-group">
+      <label for="forgotSecurityQuestion">Security Question</label>
+      <input type="text" id="forgotSecurityQuestion" placeholder="Enter the security question">
+    </div>
+    <div class="form-group">
+      <label for="forgotSecurityAnswer">Security Answer</label>
+      <input type="password" id="forgotSecurityAnswer" placeholder="Enter your answer">
+    </div>
+    <!-- Security Question Fields for Forgot Password End -->
+    <p id="retrievedPassword" style="font-weight: bold; color: #333; margin-top: 15px;"></p>
+    <button onclick="showPassword()">Show Password</button>
+    <button onclick="closeForgotPasswordModal()">Close</button>
+  </div>
+
+  <div id="warningModal" class="modal">
+    <h2>⚠️ Warning!</h2>
+    <p>You have used inappropriate language 5 times.</p>
+    <p>Continued use of banned words may result in account suspension.</p>
+    <label>
+      <input type="checkbox" id="warningCheckbox"> I understand and agree to follow the community guidelines
+    </label>
+    <button onclick="acknowledgeWarning()" class="warning-button" disabled id="acknowledgeButton">Continue</button>
+  </div>
+
+  <div id="banModal" class="modal">
+    <h2>🚫 Account Banned</h2>
+    <p>Your account has been permanently banned due to repeated violations of our community guidelines.</p>
+    <p>You have used inappropriate language 15 or more times.</p>
+    <button onclick="logout()" class="warning-button">Logout</button>
+  </div>
+
+  <div id="spamWarningModal" class="modal">
+    <h2>⚠️ Spam Warning!</h2>
+    <p>You have been detected spamming the same words repeatedly.</p>
+    <p>Continued spamming may result in account suspension.</p>
+    <label>
+      <input type="checkbox" id="spamWarningCheckbox"> I understand and agree to stop spamming
+    </label>
+    <button onclick="acknowledgeSpamWarning()" class="warning-button" disabled id="acknowledgeSpamButton">Continue</button>
+  </div>
+
+  <div id="spamBanModal" class="modal">
+    <h2>🚫 Account Banned for Spamming</h2>
+    <p>Your account has been permanently banned due to excessive spamming.</p>
+    <p>You have repeatedly sent the same words despite warnings.</p>
+    <button onclick="logout()" class="warning-button">Logout</button>
+  </div>
+
+  <div id="loginErrorModal" class="modal">
+    <h2>⚠️ Login Error</h2>
+    <p id="loginErrorMessage">This account has been banned and cannot be accessed.</p>
+    <button onclick="closeLoginErrorModal()" class="warning-button">Close</button>
+  </div>
+
+  <div id="editMessageModal" class="modal hidden">
+    <h2>✏️ Edit Message</h2>
+    <div class="form-group">
+      <label for="editMessageInput">Edit your message:</label>
+      <textarea id="editMessageInput"></textarea>
+    </div>
+    <button onclick="saveEditedMessage()">Save Changes</button>
+    <button onclick="closeEditMessageModal()">Cancel</button>
+  </div>
+
+  <div id="reportUserModal" class="modal hidden">
+    <h2>🚨 Report User</h2>
+    <p>Are you sure you want to report <span id="reportedUsername"></span>?</p>
+<div class="form-group">
+  <label for="reportReasonDropdown">Reason for reporting:</label>
+  <select id="reportReasonDropdown">
+    <option value="">Select a reason</option>
+    <option value="Bullying">Bullying</option>
+    <option value="Swearing">Swearing</option>
+    <option value="Spamming">Spamming</option>
+    <option value="Harassment">Harassment</option>
+    <option value="Hate Speech">Hate Speech</option>
+    <option value="Inappropriate Content">Inappropriate Content</option>
+    <option value="Other">Other</option>
+  </select>
+</div>
+<div class="form-group">
+  <label for="reportReason">Additional details (optional):</label>
+  <textarea id="reportReason" placeholder="Describe the issue..."></textarea>
+</div>
+
+    <button onclick="confirmReportUser()">Report</button>
+    <button onclick="closeReportUserModal()">Cancel</button>
+  </div>
+
+  <div id="termsModal" class="modal hidden">
+    <h2>Terms and Conditions</h2>
+    <div id="termsContent" style="white-space: pre-wrap; text-align: left;">
+    </div>
+    <button onclick="closeTermsAndConditionsModal()">Close</button>
+  </div>
+
+  <div id="alertDialog" class="modal hidden">
+    <h2 id="alertTitle"></h2>
+    <p id="alertMessage"></p>
+    <button onclick="closeAlertDialog()">OK</button>
+  </div>
+
+  <div id="addFakeUserModal" class="modal hidden">
+    <h2>Add Fake User</h2>
+    <p>Enter the name for the fake user:</p>
+    <div class="form-group">
+      <input type="text" id="addFakeUsernameInput" placeholder="Fake username">
+    </div>
+    <button onclick="confirmAddFakeUser()">Add</button>
+    <button onclick="closeAddFakeUserModal()">Cancel</button>
+  </div>
+
+  <div id="searchUserModal" class="modal hidden">
+    <h2>🔍 Search Users</h2>
+    <div class="form-group">
+      <label for="searchUsernameInput">Search Username:</label>
+      <input type="text" id="searchUsernameInput" placeholder="Enter username to search">
+    </div>
+    <button onclick="searchUser()">Search</button>
+    <div id="searchResults">
+      </div>
+    <button onclick="closeSearchUserModal()">Close</button>
+  </div>
+
+  <div id="adminModeModal" class="modal hidden">
+    <h2>Admin Account Mode</h2>
+    <p>Are you sure you want to enable admin account mode? You can't get banned if you say bad words, and using this mode for exploits might result in a permanent ban.</p>
+    <button onclick="enableAdminModeConfirmed()">Enable</button>
+    <button onclick="disableAdminModeConfirmed()">Disable</button>
+    <button onclick="closeAdminModeModal()">Cancel</button>
+  </div>
+
+  <div id="blockedUsersModal" class="modal hidden">
+    <h2>Blocked Users</h2>
+    <div id="blockedUsersList">
+      <p>No users blocked.</p>
+    </div>
+    <button onclick="closeBlockedUsersModal()">Close</button>
+  </div>
+
+  <script>
+    const bannedWords = ["fuck", "shit", "ass", "asshole", "nigger", "bitch", "son of a bitch", "fucking", "nigga", "pussy", "puss", "dogshit", "bullshit", "kill", "cum", "penis", "f4ck", "sh1t", "2ss", "p4ss", "p4ssy", "n1gger", "2gger", "sus", "balls", "holy", "dick", "tits", "titis", "poop", "pee", "mock", "black person", "pipiska", "suck", "cock", "poopy", "motherfucker", "motherfucking", "cocky", "middle finger", "palestine"];
+
+    function formatTime(date) {
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+
+    function filterText(text) {
+      // If admin mode is enabled for the current user, bypass filtering
+      if (currentUser && users[currentUser] && users[currentUser].isAdmin) {
+        return text;
+      }
+
+      let containsBannedWord = false;
+      const pattern = new RegExp(`\\b(${bannedWords.join('|')})\\b`, 'gi');
+      const filteredText = text.replace(pattern, match => {
+        containsBannedWord = true;
+        return '*'.repeat(match.length);
+      });
+
+      if (containsBannedWord && currentUser) {
+        increaseBadWordCount();
+      }
+
+      return filteredText;
+    }
+
+    function checkForSpam(text) {
+      // If admin mode is enabled for the current user, bypass spam checks
+      if (currentUser && users[currentUser] && users[currentUser].isAdmin) {
+        return false;
+      }
+
+      if (!currentUser || !text.trim()) return false;
+
+      // Initialize spam tracking if not exists
+      if (!users[currentUser].spamTracker) {
+        users[currentUser].spamTracker = {};
+        users[currentUser].spamCount = 0;
+      }
+
+      // Split text into words and count each word
+      const words = text.toLowerCase().split(/\s+/);
+      let isSpam = false;
+
+      words.forEach(word => {
+        if (word.length > 2) { // Only track words longer than 2 characters
+          if (!users[currentUser].spamTracker[word]) {
+            users[currentUser].spamTracker[word] = 0;
+          }
+          users[currentUser].spamTracker[word]++;
+
+          // Check if this word has been used too many times
+          if (users[currentUser].spamTracker[word] === 10) {
+            users[currentUser].spamCount = 10;
+            isSpam = true;
+          } else if (users[currentUser].spamTracker[word] >= 30) {
+            users[currentUser].spamCount = 30;
+            isSpam = true;
+          }
+        }
+      });
+
+      if (isSpam) {
+        if (users[currentUser].spamCount === 10) {
+          showSpamWarningModal();
+          return true;
+        } else if (users[currentUser].spamCount >= 30) {
+          showSpamBanModal();
+          users[currentUser].banned = true;
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function increaseBadWordCount() {
+      // If admin mode is enabled for the current user, bypass bad word count increase
+      if (currentUser && users[currentUser] && users[currentUser].isAdmin) {
+        return;
+      }
+
+      if (!users[currentUser].badWordCount) {
+        users[currentUser].badWordCount = 0;
+      }
+      users[currentUser].badWordCount++;
+
+      // Check if we need to show warning (at 5 bad words)
+      if (users[currentUser].badWordCount === 5) {
+        showWarningModal();
+      }
+      // Check if we need to ban (at 15 bad words)
+      else if (users[currentUser].badWordCount >= 15) {
+        showBanModal();
+        // Mark account as banned
+        users[currentUser].banned = true;
+      }
+    }
+
+    // Generic function to open modals
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      document.getElementById('overlay').style.display = 'block';
+      modal.classList.remove('hidden', 'closing');
+      modal.style.display = 'block';
+    }
+
+    // Generic function to close modals with animation
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.add('closing');
+      modal.addEventListener('animationend', function handler() {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        modal.classList.remove('closing');
+        modal.removeEventListener('animationend', handler);
+        // Only hide overlay if no other modals are open
+        const openModals = document.querySelectorAll('.modal:not(.hidden)');
+        if (openModals.length === 0) {
+          document.getElementById('overlay').style.display = 'none';
+        }
+      });
+    }
+
+    // Specific modal open/close functions using the generic ones
+    function showWarningModal() {
+      openModal('warningModal');
+      document.getElementById('warningCheckbox').checked = false;
+      document.getElementById('acknowledgeButton').disabled = true;
+    }
+
+    function showBanModal() {
+      // If admin mode is enabled, do not ban
+      if (currentUser && users[currentUser] && users[currentUser].isAdmin) {
+        showAlertModal('Admin Mode Active', 'You are in admin mode, so your account will not be banned.');
+        return;
+      }
+      openModal('banModal');
+      users[currentUser].banned = true;
+    }
+
+    function showSpamWarningModal() {
+      openModal('spamWarningModal');
+      document.getElementById('spamWarningCheckbox').checked = false;
+      document.getElementById('acknowledgeSpamButton').disabled = true;
+    }
+
+    function showSpamBanModal() {
+      // If admin mode is enabled, do not ban
+      if (currentUser && users[currentUser] && users[currentUser].isAdmin) {
+        showAlertModal('Admin Mode Active', 'You are in admin mode, so your account will not be banned for spamming.');
+        return;
+      }
+      openModal('spamBanModal');
+      users[currentUser].banned = true;
+    }
+
+    function showLoginErrorModal(message) {
+      document.getElementById('loginErrorMessage').textContent = message;
+      openModal('loginErrorModal');
+    }
+
+    function showTermsAndConditions() {
+      openModal('termsModal');
+      const termsContent = `
+Effective Date: 6/1/2025
+
+Welcome to Lojani. These Terms and Conditions (“Terms”) govern your access to and use of our website, services, applications, and other offerings (collectively, the “Services”). By accessing or using the Services, you agree to be bound by these Terms. If you do not agree, do not use our Services.
+
+1. Use of Services
+You agree to use our Services only for lawful purposes and in accordance with these Terms. You must not:
+* Violate any applicable law or regulation.
+* Interfere with the security or functionality of the Services.
+* Use automated scripts to collect information or interact with the Services.
+
+2. Eligibility
+You must be at least 13 years old to use our Services, or have the consent of a parent or guardian.
+
+3. User Content
+You retain ownership of any content you submit to our Services. However, by submitting content, you grant us a non-exclusive, worldwide, royalty-free license to use, reproduce, modify, and distribute your content in connection with operating and improving the Services.
+
+4. Intellectual Property
+All content, trademarks, logos, and intellectual property on our Services are owned by or licensed to us. You may not use, copy, or distribute any of these without our prior written consent.
+
+5. Privacy
+Your use of the Services is also governed by our Privacy Policy, which explains how we collect and use your information.
+
+6. Termination
+We reserve the right to suspend or terminate your access to the Services at our sole discretion, without notice, if we believe you have violated these Terms or engaged in illegal or inappropriate behavior.
+
+7. Disclaimer of Warranties
+The Services are provided “as is” without warranties of any kind, express or implied. We do not guarantee that the Services will be secure, error-free, or uninterrupted.
+
+8. Limitation of Liability
+To the fullest extent permitted by law, we shall not be liable for any indirect, incidental, special, or consequential damages resulting from your use of or inability to use the Services.
+
+9. Changes to Terms
+We may update these Terms from time to time. If we make significant changes, we will notify you. Your continued use of the Services after changes constitutes your acceptance of the updated Terms.
+
+10. Governing Law
+These Terms are governed by and construed in accordance with the laws of Nasbardash, without regard to its conflict of law provisions.
+
+11. Contact Us
+If you have questions about these Terms, please contact us at:
+Email: Lojani@gmail.com
+Address: Gen5 Corporation
+      `;
+      document.getElementById('termsContent').textContent = termsContent;
+    }
+
+
+    function acknowledgeWarning() {
+      closeModal('warningModal');
+    }
+
+    function acknowledgeSpamWarning() {
+      closeModal('spamWarningModal');
+    }
+
+    function closeLoginErrorModal() {
+      closeModal('loginErrorModal');
+    }
+
+    // Delete Account Functions
+    function showDeleteAccountModal() {
+      closeModal('settingsModal'); // Close settings before opening delete modal
+      openModal('deleteAccountModal');
+      document.getElementById('deletePasswordInput').value = '';
+    }
+
+    function closeDeleteAccountModal() {
+      closeModal('deleteAccountModal');
+      openModal('settingsModal'); // Re-open settings modal
+    }
+
+    function deleteAccount() {
+      const enteredPassword = document.getElementById('deletePasswordInput').value;
+      const userPassword = accounts[currentUser].password; // Access password from the accounts object
+
+      if (enteredPassword === userPassword) {
+        // Mark account as banned (this will prevent login)
+        users[currentUser].banned = true;
+        users[currentUser].deleted = true;
+        // Also remove admin status on deletion
+        if (users[currentUser].isAdmin) {
+            localStorage.removeItem(`isAdmin_${currentUser}`);
+        }
+
+        // Close modals and logout
+        closeModal('deleteAccountModal');
+        showAlertModal('Account Deleted', 'Your account has been permanently deleted.');
+        logout();
+      } else {
+        showAlertModal('Error', 'Incorrect password. Account deletion cancelled.');
+        closeModal('deleteAccountModal');
+      }
+    }
+
+    // New functions for "How to delete Lojani data" modal
+    function showDeleteDataModal() {
+        closeModal('settingsModal'); // Close settings before opening delete data modal
+        openModal('deleteDataModal');
+    }
+
+    function closeDeleteDataModal() {
+        closeModal('deleteDataModal');
+        openModal('settingsModal'); // Re-open settings modal
+    }
+
+
+    // Enable the acknowledge button only when checkbox is checked
+    document.getElementById('warningCheckbox').addEventListener('change', function() {
+      document.getElementById('acknowledgeButton').disabled = !this.checked;
+    });
+
+    // Enable the spam acknowledge button only when checkbox is checked
+    document.getElementById('spamWarningCheckbox').addEventListener('change', function() {
+      document.getElementById('acknowledgeSpamButton').disabled = !this.checked;
+    });
+
+    // Modified accounts object to store password, security question, and answer
+    let accounts = {};
+    let currentUser = null;
+    let typingTimeout;
+    let users = {};
+    let messagesData = []; // Store all messages here
+
+    // --- Local Storage Persistence ---
+    function saveUserData() {
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem('accounts', JSON.stringify(accounts));
+        localStorage.setItem('messagesData', JSON.stringify(messagesData));
+        if (currentUser) {
+            localStorage.setItem('currentUser', currentUser);
+            localStorage.setItem(`isAdmin_${currentUser}`, users[currentUser].isAdmin);
+            localStorage.setItem(`blockList_${currentUser}`, JSON.stringify(users[currentUser].blockList));
+        }
+    }
+
+    function loadUserData() {
+        const storedUsers = localStorage.getItem('users');
+        const storedAccounts = localStorage.getItem('accounts');
+        const storedMessagesData = localStorage.getItem('messagesData');
+        const storedCurrentUser = localStorage.getItem('currentUser');
+
+        if (storedUsers) {
+            users = JSON.parse(storedUsers);
+            // Ensure blockList, securityQuestion, securityAnswer exist for all loaded users
+            for (const userKey in users) {
+                if (!users[userKey].blockList) {
+                    users[userKey].blockList = [];
+                }
+                if (!users[userKey].securityQuestion) { // Initialize securityQuestion if missing
+                    users[userKey].securityQuestion = '';
+                }
+                if (!users[userKey].securityAnswer) { // Initialize securityAnswer if missing
+                    users[userKey].securityAnswer = '';
+                }
+                // Load individual admin status and block list for each user
+                users[userKey].isAdmin = localStorage.getItem(`isAdmin_${userKey}`) === 'true';
+                const storedBlockList = localStorage.getItem(`blockList_${userKey}`);
+                if (storedBlockList) {
+                    users[userKey].blockList = JSON.parse(storedBlockList);
+                }
+            }
+        }
+        if (storedAccounts) {
+            accounts = JSON.parse(storedAccounts);
+        }
+        if (storedMessagesData) {
+            messagesData = JSON.parse(storedMessagesData);
+        }
+        if (storedCurrentUser && users[storedCurrentUser] && !users[storedCurrentUser].banned && !users[storedCurrentUser].deleted) {
+            currentUser = storedCurrentUser;
+        } else if (storedCurrentUser) {
+            // Clear current user if they are banned/deleted
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+        }
+    }
+
+
+    // --- Screen Navigation ---
+    function showScreen(idToShow) {
+      const screens = ['loginScreen', 'createAccountScreen', 'messengerScreen'];
+      screens.forEach(screenId => {
+        const screenElement = document.getElementById(screenId);
+        if (screenId === idToShow) {
+          screenElement.classList.remove('hidden'); // Ensure it's not hidden
+          setTimeout(() => {
+            screenElement.classList.add('active'); // Add active class to trigger animation
+          }, 10); // Small delay to allow 'hidden' removal to register
+        } else {
+          const currentScreen = document.getElementById(screenId);
+          if (currentScreen.classList.contains('active')) {
+            currentScreen.classList.remove('active'); // Start fade out
+            setTimeout(() => {
+              currentScreen.classList.add('hidden'); // Hide after animation
+            }, 500); // Match CSS transition duration
+          } else {
+            currentScreen.classList.add('hidden'); // Immediately hide if not active
+          }
+        }
+      });
+    }
+
+    function showLogin() {
+      document.getElementById('loginUsername').value = ''; // Clear fields on screen change
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('overlay').style.display = 'none'; // Ensure overlay is hidden when showing main screens
+      document.querySelectorAll('.modal').forEach(modal => modal.classList.add('hidden', 'closing')); // Hide all modals
+      showScreen('loginScreen');
+      saveUserData(); // Save data on screen change (e.g., before closing tab)
+    }
+
+    function showCreateAccount() {
+      document.getElementById('createUsername').value = ''; // Clear fields on screen change
+      document.getElementById('createPassword').value = '';
+      document.getElementById('securityQuestion').value = ''; // Clear security question field
+      document.getElementById('securityAnswer').value = ''; // Clear security answer field
+      document.getElementById('agreeCheckbox').checked = false;
+      document.getElementById('overlay').style.display = 'none'; // Ensure overlay is hidden when showing main screens
+      document.querySelectorAll('.modal').forEach(modal => modal.classList.add('hidden', 'closing')); // Hide all modals
+      showScreen('createAccountScreen');
+      saveUserData();
+    }
+
+    function showMessenger() {
+      showScreen('messengerScreen');
+      document.getElementById('currentUser').textContent = currentUser;
+      updateUserDropdown();
+      displayProfile();
+      displayMessages(); // Display messages when messenger screen is shown
+      saveUserData();
+    }
+
+    // --- User Authentication ---
+    function login() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      const filteredUsername = filterText(username);
+
+      if (filteredUsername !== username && !(users[username] && users[username].isAdmin)) { // Allow admin to have filtered username
+        showLoginErrorModal('Your username contains inappropriate words.');
+        return;
+      }
+
+      // First check if the account exists
+      if (accounts[username] && accounts[username].password === password) { // Check password from object
+        // Then check if the user is banned or deleted
+        if (users[username] && (users[username].banned || users[username].deleted)) {
+          showLoginErrorModal('This account has been banned and cannot be accessed.');
+          return;
+        }
+
+        // If all checks pass, proceed with login
+        currentUser = username;
+        // Load admin status and block list from local storage for the current user
+        users[currentUser].isAdmin = localStorage.getItem(`isAdmin_${currentUser}`) === 'true';
+        const storedBlockList = localStorage.getItem(`blockList_${currentUser}`);
+        if (storedBlockList) {
+            users[currentUser].blockList = JSON.parse(storedBlockList);
+        } else {
+            users[currentUser].blockList = []; // Initialize if not present
+        }
+        showMessenger();
+      } else {
+        showLoginErrorModal('Invalid username or password.');
+      }
+      saveUserData();
+    }
+
+    function createAccount() {
+      const username = document.getElementById('createUsername').value.trim();
+      const password = document.getElementById('createPassword').value;
+      const securityQuestion = document.getElementById('securityQuestion').value.trim();
+      const securityAnswer = document.getElementById('securityAnswer').value.trim();
+      const agreeCheckbox = document.getElementById('agreeCheckbox');
+
+      const filteredUsername = filterText(username);
+
+      if (filteredUsername !== username) {
+        showAlertModal('Invalid Username', 'Your username contains inappropriate words.');
+        return;
+      }
+
+      if (!agreeCheckbox.checked) {
+        showAlertModal('Terms Agreement Required', 'You must agree to the terms and conditions.');
+        return;
+      }
+
+      // Validate security question and answer
+      if (!securityQuestion || !securityAnswer) {
+        showAlertModal('Security Question Required', 'Please set a security question and answer.');
+        return;
+      }
+
+      if (accounts[username]) {
+        showAlertModal('Creation Failed', 'Username already exists.');
+      } else if (username && password && agreeCheckbox.checked) {
+        // Store password, security question, and answer in the accounts object
+        accounts[username] = {
+            password: password,
+            securityQuestion: securityQuestion,
+            securityAnswer: securityAnswer
+        };
+        users[username] = {
+          messages: [],
+          profilePic: "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+          aboutMe: '',
+          country: '',
+          badWordCount: 0,
+          banned: false,
+          deleted: false,
+          spamTracker: {},
+          spamCount: 0,
+          joinDate: new Date().toISOString(), // Set join date on account creation
+          isAdmin: false, // Default to not admin
+          isPredefinedDemoUser: false, // NEW: This is NOT a predefined demo user
+          blockList: [], // Initialize block list for new users
+          securityQuestion: securityQuestion, // Store security question in user data
+          securityAnswer: securityAnswer // Store security answer in user data
+        };
+        currentUser = username; // Automatically log in the new user
+        showMessenger();
+        showAlertModal('Account Created', 'Account created successfully. You are now logged in.');
+      } else {
+        showAlertModal('Invalid Input', 'Please fill out all fields correctly.');
+      }
+      saveUserData();
+    }
+
+    function logout() {
+      currentUser = null;
+      saveUserData(); // Save current user state before logging out
+
+      // Immediately hide the overlay
+      document.getElementById('overlay').style.display = 'none';
+
+      // Immediately hide and reset all modals
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.add('hidden');
+        modal.classList.remove('closing'); // Ensure 'closing' class is removed
+        modal.style.display = 'none'; // Directly set display to none
+      });
+
+      // Ensure all main screen containers are reset before showing login
+      const screens = ['loginScreen', 'createAccountScreen', 'messengerScreen'];
+      screens.forEach(screenId => {
+        const screenElement = document.getElementById(screenId);
+        screenElement.classList.remove('active'); // Remove active from all
+        screenElement.classList.add('hidden'); // Ensure all are hidden
+      });
+
+      // Now show the login screen
+      showLogin();
+    }
+
+    // --- Messaging ---
+    function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      let messageText = messageInput.value.trim();
+
+      // Check if user is banned before allowing message
+      if (currentUser && users[currentUser].banned) {
+        if (users[currentUser].spamCount >= 30) {
+          showSpamBanModal();
+        } else {
+          showBanModal();
+        }
+        return;
+      }
+
+      // Check if the current user is blocked by any other user
+      // This is primarily for the client-side simulation; actual blocking would be server-side
+      const isBlockedBySomeone = Object.values(users).some(user => user.blockList && user.blockList.includes(currentUser));
+      if (isBlockedBySomeone) {
+        // In a real application, the message might be sent but not delivered to the blocking user.
+        // For this client-side demo, we'll just show an alert and not add the message.
+        showAlertModal('Message Not Sent', 'You cannot send messages to users who have blocked you.');
+        messageInput.value = '';
+        return;
+      }
+
+      if (messageText) {
+        // Check for spam first (bypassed if admin)
+        if (checkForSpam(messageText)) {
+          messageInput.value = '';
+          saveUserData(); // Save after potential spam ban
+          return;
+        }
+
+        const filteredText = filterText(messageText); // This also handles bad word count increase (bypassed if admin)
+        const timestamp = new Date();
+
+        const newMessage = {
+          id: Date.now(), // Unique ID for the message
+          sender: currentUser,
+          text: filteredText,
+          timestamp: timestamp.toISOString(), // Store as ISO string for consistency
+          profilePic: users[currentUser].profilePic || 'https://via.placeholder.com/40'
+        };
+
+        messagesData.push(newMessage); // Add to global messages array
+        displayMessages(); // Re-render all messages
+        messageInput.value = '';
+        hideTypingIndicator();
+        saveUserData(); // Save after sending message
+      }
+    }
+
+    function displayMessages() {
+      const messagesContainer = document.getElementById('messages');
+      messagesContainer.innerHTML = ''; // Clear existing messages
+
+      const currentUserBlockList = users[currentUser] ? users[currentUser].blockList : [];
+
+      messagesData.forEach(message => {
+        // Only display messages if the sender is not in the current user's block list
+        if (!currentUserBlockList.includes(message.sender)) {
+          const messageElement = document.createElement('div');
+          messageElement.classList.add('message');
+          if (message.sender === currentUser) { // Add a class for current user messages
+            messageElement.classList.add('current-user');
+          }
+          messageElement.setAttribute('data-message-id', message.id); // Set message ID for targeting
+
+          const profilePic = document.createElement('img');
+          profilePic.classList.add('profile-pic');
+          profilePic.src = message.profilePic;
+
+          const messageContent = document.createElement('div');
+          messageContent.classList.add('message-content');
+
+          const messageHeader = document.createElement('div');
+          messageHeader.classList.add('message-header');
+
+          const usernameSpan = document.createElement('span');
+          usernameSpan.textContent = message.sender;
+
+          const timeSpan = document.createElement('span');
+          timeSpan.classList.add('message-time');
+          timeSpan.textContent = formatTime(new Date(message.timestamp)); // Convert back to Date object
+
+          messageHeader.appendChild(usernameSpan);
+          messageHeader.appendChild(timeSpan);
+
+          const messageTextP = document.createElement('p');
+          messageTextP.classList.add('message-text');
+          messageTextP.textContent = message.text;
+
+          messageContent.appendChild(messageHeader);
+          messageContent.appendChild(messageTextP);
+
+          messageElement.appendChild(profilePic);
+          messageElement.appendChild(messageContent);
+
+          // Add message options dropdown
+          const optionsDiv = document.createElement('div');
+          optionsDiv.classList.add('message-options');
+          optionsDiv.textContent = '...'; // Three dots for options
+          optionsDiv.onclick = (event) => toggleMessageOptions(event, message.id, message.sender);
+
+          const optionsDropdown = document.createElement('div');
+          optionsDropdown.classList.add('message-options-dropdown');
+          optionsDropdown.id = `dropdown-${message.id}`;
+
+          if (message.sender === currentUser) {
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.onclick = () => editMessage(message.id);
+            optionsDropdown.appendChild(editButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => deleteMessage(message.id);
+            optionsDropdown.appendChild(deleteButton);
+          } else {
+            const reportButton = document.createElement('button');
+            reportButton.textContent = 'Report User';
+            reportButton.onclick = () => reportUser(message.sender);
+            optionsDropdown.appendChild(reportButton);
+
+            // Add Block/Unblock button
+            const blockButton = document.createElement('button');
+            const isBlocked = users[currentUser].blockList.includes(message.sender);
+            blockButton.textContent = isBlocked ? 'Unblock User' : 'Block User';
+            blockButton.onclick = () => toggleBlockUser(message.sender);
+            optionsDropdown.appendChild(blockButton);
+          }
+
+          messageElement.appendChild(optionsDiv);
+          messageElement.appendChild(optionsDropdown);
+
+          messagesContainer.appendChild(messageElement);
+        }
+      });
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function toggleMessageOptions(event, messageId, sender) {
+      event.stopPropagation(); // Prevent the click from propagating to document
+      const dropdown = document.getElementById(`dropdown-${messageId}`);
+      // Close all other dropdowns
+      document.querySelectorAll('.message-options-dropdown').forEach(d => {
+        if (d.id !== `dropdown-${messageId}`) {
+          d.style.display = 'none';
+        }
+      });
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (event) => {
+      document.querySelectorAll('.message-options-dropdown').forEach(dropdown => {
+        dropdown.style.display = 'none';
+      });
+    });
+
+    let messageToEditId = null;
+
+    function editMessage(messageId) {
+      messageToEditId = messageId;
+      const message = messagesData.find(m => m.id === messageId);
+      if (message && message.sender === currentUser) {
+        document.getElementById('editMessageInput').value = message.text;
+        openModal('editMessageModal');
+      }
+    }
+
+    function saveEditedMessage() {
+      if (messageToEditId) {
+        const editedText = document.getElementById('editMessageInput').value.trim();
+        if (editedText) {
+          const messageIndex = messagesData.findIndex(m => m.id === messageToEditId);
+          if (messageIndex !== -1) {
+            messagesData[messageIndex].text = filterText(editedText);
+            messagesData[messageIndex].timestamp = new Date().toISOString(); // Update timestamp on edit
+            displayMessages();
+            closeEditMessageModal();
+            saveUserData(); // Save after editing message
+          }
+        } else {
+          showAlertModal('Empty Message', 'Message cannot be empty.');
+        }
+      }
+    }
+
+    function closeEditMessageModal() {
+      messageToEditId = null;
+      closeModal('editMessageModal');
+    }
+
+    function deleteMessage(messageId) {
+      showAlertModal('Confirm Deletion', 'Are you sure you want to delete this message?');
+      document.getElementById('alertDialog').querySelector('button').onclick = () => {
+        messagesData = messagesData.filter(m => m.id !== messageId);
+        displayMessages();
+        saveUserData(); // Save after deleting message
+        closeAlertDialog();
+      };
+    }
+
+    let userToReport = null;
+
+    function reportUser(username) {
+      userToReport = username;
+      document.getElementById('reportedUsername').textContent = username;
+      document.getElementById('reportReason').value = '';
+      openModal('reportUserModal');
+    }
+
+    function confirmReportUser() {
+      const reason = document.getElementById('reportReason').value.trim();
+      if (userToReport && reason) {
+        console.log(`User ${currentUser} reported ${userToReport} for: ${reason}`);
+        showAlertModal('User Reported', `User ${userToReport} has been reported. Thank you for your feedback.`);
+        closeReportUserModal();
+      } else {
+        showAlertModal('Report Failed', 'Please provide a reason for reporting.');
+      }
+    }
+
+    function closeReportUserModal() {
+      userToReport = null;
+      closeModal('reportUserModal');
+    }
+
+    function showTypingIndicator() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      typingIndicator.textContent = `${currentUser} is typing...`;
+      clearTimeout(typingTimeout);
+    }
+
+    function hideTypingIndicator() {
+      typingTimeout = setTimeout(() => {
+        document.getElementById('typingIndicator').textContent = '';
+      }, 1000);
+    }
+
+    // --- Settings ---
+    function openSettings() {
+      // Check if user is banned before allowing settings changes
+      if (currentUser && users[currentUser].banned) {
+        if (users[currentUser].spamCount >= 30) {
+          showSpamBanModal();
+        } else {
+          showBanModal();
+        }
+        return;
+      }
+
+      openModal('settingsModal');
+      const user = users[currentUser];
+      document.getElementById('changeName').value = currentUser;
+      document.getElementById('aboutMeInput').value = user.aboutMe;
+      document.getElementById('countrySelect').value = user.country;
+
+      // Set the join date input and disable if not admin
+      const joinDateInput = document.getElementById('joinDateInput');
+      const joinDate = user.joinDate ? new Date(user.joinDate) : null;
+      joinDateInput.value = joinDate ? joinDate.toISOString().split('T')[0] : '';
+
+      // Disable join date input if not an admin
+      joinDateInput.disabled = !(currentUser && users[currentUser].isAdmin);
+    }
+
+    function closeSettings() {
+      closeModal('settingsModal');
+    }
+
+    function saveSettings() {
+      const oldUsername = currentUser;
+      const newName = document.getElementById('changeName').value.trim();
+      if (newName && newName !== oldUsername) {
+        const filteredName = filterText(newName);
+        if (filteredName !== newName && !(users[oldUsername] && users[oldUsername].isAdmin)) { // Allow admin to have filtered name
+          showAlertModal('Invalid Username', 'Your username contains inappropriate words.');
+          return;
+        }
+
+        // Update accounts and users with the new username
+        accounts[filteredName] = accounts[oldUsername];
+        delete accounts[oldUsername];
+
+        users[filteredName] = users[oldUsername];
+        delete users[oldUsername];
+
+        // Update current user
+        currentUser = filteredName;
+
+        // Update local storage keys for admin status and block list
+        localStorage.removeItem(`isAdmin_${oldUsername}`);
+        localStorage.setItem(`isAdmin_${currentUser}`, users[currentUser].isAdmin);
+        localStorage.removeItem(`blockList_${oldUsername}`);
+        localStorage.setItem(`blockList_${currentUser}`, JSON.stringify(users[currentUser].blockList));
+
+
+        document.getElementById('currentUser').textContent = currentUser;
+      }
+
+      const aboutMeInput = document.getElementById('aboutMeInput').value.trim();
+      if (aboutMeInput) {
+        const filteredAboutMe = filterText(aboutMeInput);
+        users[currentUser].aboutMe = filteredAboutMe;
+      }
+
+      const profilePicInput = document.getElementById('profilePicInput');
+      if (profilePicInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          users[currentUser].profilePic = e.target.result;
+          displayProfile(); // Update profile immediately
+          saveUserData(); // Save after updating profile picture
+        };
+        reader.readAsDataURL(profilePicInput.files[0]);
+      }
+
+      const selectedCountry = document.getElementById('countrySelect').value;
+      if (selectedCountry) {
+        users[currentUser].country = selectedCountry;
+      }
+
+      const joinDateInput = document.getElementById('joinDateInput');
+      // Only allow changing join date if the input is enabled (meaning admin mode is active)
+      if (!joinDateInput.disabled && joinDateInput.value) {
+          users[currentUser].joinDate = new Date(joinDateInput.value).toISOString();
+      }
+      // Removed the 'else if' that triggered the alert when the field was disabled and had a value.
+      // This ensures no alert pops up when merely saving other settings.
+
+
+      closeSettings();
+      displayProfile();
+      updateUserDropdown();
+      displayMessages(); // Re-display messages to update sender name if changed
+      saveUserData(); // Save after saving settings
+    }
+
+    // --- Change Password Functions ---
+    function showChangePasswordModal() {
+        closeModal('settingsModal'); // Close settings modal
+        openModal('changePasswordModal'); // Open change password modal
+        // Clear input fields when showing the modal
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmNewPassword').value = '';
+    }
+
+    function closeChangePasswordModal() {
+        closeModal('changePasswordModal'); // Close change password modal
+        openModal('settingsModal'); // Re-open settings modal
+    }
+
+    function saveNewPassword() {
+        const currentPassword = document.getElementById('currentPassword').value; // Get current password input
+        const newPassword = document.getElementById('newPassword').value; // Get new password input
+        const confirmNewPassword = document.getElementById('confirmNewPassword').value; // Get confirm new password input
+
+        if (currentPassword === '') { // Check if current password is empty
+            showAlertModal('Error', 'Please enter your current password.'); // Show error if empty
+            return;
+        }
+
+        if (newPassword === '' || confirmNewPassword === '') { // Check if new passwords are empty
+            showAlertModal('Error', 'Please enter and confirm your new password.'); // Show error if empty
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) { // Check if new passwords match
+            showAlertModal('Error', 'New passwords do not match.'); // Show error if mismatch
+            return;
+        }
+
+        if (accounts[currentUser].password !== currentPassword) { // Check if current password is correct
+            showAlertModal('Error', 'Incorrect current password.'); // Show error if incorrect
+            return;
+        }
+
+        // Update the password in the accounts object
+        accounts[currentUser].password = newPassword;
+        showAlertModal('Success', 'Your password has been changed successfully!'); // Show success message
+        closeChangePasswordModal(); // Close the modal
+        saveUserData(); // Save after changing password
+    }
+
+    // --- Forgot Password Functions ---
+    function showForgotPassword() {
+        closeModal('loginScreen');
+        openModal('forgotPasswordModal');
+        document.getElementById('forgotPasswordUsername').value = '';
+        document.getElementById('forgotSecurityQuestion').value = ''; // Clear security question field
+        document.getElementById('forgotSecurityAnswer').value = ''; // Clear security answer field
+        document.getElementById('retrievedPassword').textContent = ''; // Clear previous message
+    }
+
+    function closeForgotPasswordModal() {
+        closeModal('forgotPasswordModal');
+        showLogin();
+    }
+
+    function showPassword() {
+        const username = document.getElementById('forgotPasswordUsername').value.trim();
+        const enteredSecurityQuestion = document.getElementById('forgotSecurityQuestion').value.trim();
+        const enteredSecurityAnswer = document.getElementById('forgotSecurityAnswer').value.trim();
+        const retrievedPasswordDisplay = document.getElementById('retrievedPassword');
+
+        if (!username) {
+            retrievedPasswordDisplay.textContent = 'Please enter a username.';
+            retrievedPasswordDisplay.style.color = '#d9534f'; // Red for error
+            return;
+        }
+
+        if (!accounts[username]) {
+            retrievedPasswordDisplay.textContent = 'Username not found.';
+            retrievedPasswordDisplay.style.color = '#d9534f'; // Red for error
+            return;
+        }
+
+        const storedAccount = accounts[username];
+
+        if (storedAccount.securityQuestion !== enteredSecurityQuestion || storedAccount.securityAnswer !== enteredSecurityAnswer) {
+            retrievedPasswordDisplay.textContent = 'Incorrect security question or answer.';
+            retrievedPasswordDisplay.style.color = '#d9534f'; // Red for error
+            return;
+        }
+
+        // If username and security Q&A match, display the password
+        retrievedPasswordDisplay.textContent = `Your password is: ${storedAccount.password}`;
+        retrievedPasswordDisplay.style.color = '#28a745'; // Green for success
+    }
+
+
+    // --- Admin Account Mode ---
+    function toggleAdminMode() {
+        closeModal('settingsModal');
+        openModal('adminModeModal');
+    }
+
+    function enableAdminModeConfirmed() {
+        if (currentUser) {
+            users[currentUser].isAdmin = true;
+            localStorage.setItem(`isAdmin_${currentUser}`, 'true'); // Persist admin status
+            showAlertModal('Admin Mode Enabled', 'You are now in admin account mode. Moderation checks will be bypassed.');
+        }
+        closeAdminModeModal();
+        saveUserData(); // Save after changing admin mode
+    }
+
+    function disableAdminModeConfirmed() {
+        if (currentUser) {
+            users[currentUser].isAdmin = false;
+            localStorage.setItem(`isAdmin_${currentUser}`, 'false'); // Persist admin status
+            showAlertModal('Admin Mode Disabled', 'Admin account mode has been disabled. Moderation checks are now active.');
+        }
+        closeAdminModeModal();
+        saveUserData(); // Save after changing admin mode
+    }
+
+    function closeAdminModeModal() {
+        closeModal('adminModeModal');
+        openModal('settingsModal'); // Re-open settings modal
+    }
+
+
+    // --- User List and Switching ---
+    function updateUserDropdown() {
+      const userSelect = document.getElementById('userSelect');
+      userSelect.innerHTML = '<option value="">Select User</option>';
+      Object.keys(users).forEach(user => {
+        // Only show users that are not banned, not deleted, and are NOT predefined demo users
+        if (!users[user].banned && !users[user].deleted && !users[user].isPredefinedDemoUser) {
+          const option = document.createElement('option');
+          option.value = user;
+          option.textContent = user;
+          userSelect.appendChild(option);
+        }
+      });
+      // Set the currently active user in the dropdown
+      if (currentUser) {
+        userSelect.value = currentUser;
+      }
+    }
+
+    function switchUser() {
+      const userSelect = document.getElementById('userSelect');
+      const selectedUser = userSelect.value;
+      if (selectedUser && selectedUser !== currentUser) {
+        // Check if the selected user is banned or deleted
+        if (users[selectedUser].banned || users[selectedUser].deleted) {
+          showLoginErrorModal('This account has been banned and cannot be accessed.');
+          userSelect.value = currentUser; // Revert dropdown selection
+          return;
+        }
+
+        currentUser = selectedUser;
+        // Load admin status and block list for the switched user
+        users[currentUser].isAdmin = localStorage.getItem(`isAdmin_${currentUser}`) === 'true';
+        const storedBlockList = localStorage.getItem(`blockList_${currentUser}`);
+        if (storedBlockList) {
+            users[currentUser].blockList = JSON.parse(storedBlockList);
+        } else {
+            users[currentUser].blockList = [];
+        }
+        showMessenger(); // Update UI for the switched user
+        saveUserData(); // Save after switching user
+      }
+    }
+
+    // --- Profile Display ---
+    function displayProfile() {
+      const user = users[currentUser];
+      if (user) {
+        const aboutMeText = user.aboutMe || 'No bio set.';
+        document.getElementById('aboutMeText').textContent = aboutMeText;
+
+        let countryText = user.country ? `From: ${user.country}` : 'No country selected.';
+        const joinDate = user.joinDate ? new Date(user.joinDate) : null;
+
+        // Easter Egg Logic
+        if (joinDate) {
+          const easterEggDate = new Date('1958-04-01');
+          if (joinDate.getFullYear() === easterEggDate.getFullYear() &&
+              joinDate.getMonth() === easterEggDate.getMonth() &&
+              joinDate.getDate() === easterEggDate.getDate() &&
+              user.country === 'Niger') {
+            countryText = 'From: *****';
+          }
+        }
+        document.getElementById('countryText').textContent = countryText;
+
+        const joinDateText = user.joinDate ? `Joined: ${new Date(user.joinDate).toLocaleDateString()}` : 'Not available.';
+        document.getElementById('joinDateText').textContent = joinDateText;
+      }
+    }
+
+    // --- Fake User ---
+    function addFakeUser() {
+      // Clear the input field when opening the modal
+      document.getElementById('addFakeUsernameInput').value = '';
+      openModal('addFakeUserModal');
+    }
+
+    function confirmAddFakeUser() {
+      const fakeUsername = document.getElementById('addFakeUsernameInput').value;
+      if (fakeUsername) {
+        const username = fakeUsername.trim();
+        if (username && !accounts[username]) {
+          accounts[username] = {
+            password: 'password', // Default password for fake users
+            securityQuestion: 'What is my favorite color?', // Default security question
+            securityAnswer: 'blue' // Default security answer
+          };
+          users[username] = {
+            messages: [],
+            profilePic: null,
+            aboutMe: 'I am a fake user.',
+            country: 'Wonderland',
+            badWordCount: 0,
+            banned: false,
+            deleted: false,
+            spamTracker: {},
+            spamCount: 0,
+            joinDate: new Date().toISOString(), // Set join date for fake users
+            isAdmin: false, // Fake users are not admins by default
+            isPredefinedDemoUser: false, // NEW: User-created fake users are NOT predefined demo users
+            blockList: [], // Initialize block list for fake users
+            securityQuestion: accounts[username].securityQuestion, // Add to user data as well
+            securityAnswer: accounts[username].securityAnswer // Add to user data as well
+          };
+          updateUserDropdown();
+          showAlertModal('Fake User Added', `Fake user "${username}" added.`);
+          closeAddFakeUserModal();
+          saveUserData(); // Save after adding fake user
+        } else {
+          showAlertModal('Error', 'Username already exists or is invalid.');
+        }
+      } else {
+        showAlertModal('Error', 'Please enter a username for the fake user.');
+      }
+    }
+
+    function closeAddFakeUserModal() {
+      closeModal('addFakeUserModal');
+    }
+
+    // --- Search User System ---
+    function openSearchUserModal() {
+      document.getElementById('searchUsernameInput').value = '';
+      document.getElementById('searchResults').innerHTML = ''; // Clear previous results
+      openModal('searchUserModal');
+    }
+
+    function searchUser() {
+      const query = document.getElementById('searchUsernameInput').value.trim().toLowerCase();
+      const searchResultsDiv = document.getElementById('searchResults');
+      searchResultsDiv.innerHTML = ''; // Clear previous results
+
+      if (query.length === 0) {
+        searchResultsDiv.innerHTML = '<p>Please enter a username to search.</p>';
+        return;
+      }
+
+      const foundUsers = Object.keys(users).filter(username =>
+        username.toLowerCase().includes(query) && !users[username].deleted // Do not show deleted users
+      );
+
+      if (foundUsers.length > 0) {
+        foundUsers.forEach(username => {
+          const user = users[username];
+          const resultItem = document.createElement('div');
+          resultItem.classList.add('search-result-item');
+          resultItem.innerHTML = `
+            <h4>${username}</h4>
+            <p><strong>Bio:</strong> ${user.aboutMe || 'No bio set.'}</p>
+            <p><strong>Country:</strong> ${user.country || 'No country selected.'}</p>
+            <p><strong>Joined:</strong> ${user.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'Not available.'}</p>
+            ${user.banned ? '<p style="color: red; font-weight: bold;">(Banned)</p>' : ''}
+            ${user.isAdmin ? '<p style="color: green; font-weight: bold;">(Admin)</p>' : ''}
+          `;
+          // Optional: Add a click listener to switch to that user's profile or display more details
+          resultItem.addEventListener('click', () => {
+            // For now, we'll just show an alert or you can extend this to view profile in messenger
+            showAlertModal('User Details', `
+                Username: ${username}
+                Bio: ${user.aboutMe || 'No bio set.'}
+                Country: ${user.country || 'No country selected.'}
+                Joined: ${user.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'Not available.'}
+                Status: ${user.banned ? 'Banned' : 'Active'}
+                Admin: ${user.isAdmin ? 'Yes' : 'No'}
+            `);
+          });
+          searchResultsDiv.appendChild(resultItem);
+        });
+      } else {
+        searchResultsDiv.innerHTML = '<p>No users found matching your search.</p>';
+      }
+    }
+
+    function closeSearchUserModal() {
+      closeModal('searchUserModal');
+    }
+
+    // --- Terms and Conditions Functions ---
+    function closeTermsAndConditionsModal() {
+      closeModal('termsModal');
+    }
+
+    // --- Generic Alert Modal ---
+    function showAlertModal(title, message) {
+      document.getElementById('alertTitle').textContent = title;
+      document.getElementById('alertMessage').textContent = message;
+      openModal('alertDialog');
+    }
+
+    function closeAlertDialog() {
+      closeModal('alertDialog');
+    }
+
+    // --- User Blocking Functions ---
+    function toggleBlockUser(usernameToBlock) {
+        if (!currentUser || currentUser === usernameToBlock) {
+            showAlertModal('Error', 'Cannot block yourself.');
+            return;
+        }
+
+        const userBlockList = users[currentUser].blockList;
+        const index = userBlockList.indexOf(usernameToBlock);
+
+        if (index > -1) {
+            // User is already blocked, unblock them
+            userBlockList.splice(index, 1);
+            showAlertModal('User Unblocked', `${usernameToBlock} has been unblocked.`);
+        } else {
+            // User is not blocked, block them
+            userBlockList.push(usernameToBlock);
+            showAlertModal('User Blocked', `${usernameToBlock} has been blocked. You will no longer see their messages.`);
+        }
+        localStorage.setItem(`blockList_${currentUser}`, JSON.stringify(userBlockList)); // Persist block list
+        displayMessages(); // Re-render messages to apply block/unblock
+        displayBlockedUsers(); // Update the blocked users list if the modal is open
+    }
+
+    function openBlockedUsersModal() {
+        openModal('blockedUsersModal');
+        displayBlockedUsers();
+    }
+
+    function closeBlockedUsersModal() {
+        closeModal('blockedUsersModal');
+    }
+
+    function displayBlockedUsers() {
+        const blockedUsersListDiv = document.getElementById('blockedUsersList');
+        blockedUsersListDiv.innerHTML = '';
+
+        if (!currentUser || !users[currentUser] || users[currentUser].blockList.length === 0) {
+            blockedUsersListDiv.innerHTML = '<p>No users blocked.</p>';
+            return;
+        }
+
+        users[currentUser].blockList.forEach(blockedUsername => {
+            const blockedUserItem = document.createElement('div');
+            blockedUserItem.classList.add('blocked-user-item');
+            blockedUserItem.innerHTML = `
+                <span>${blockedUsername}</span>
+                <button onclick="toggleBlockUser('${blockedUsername}')">Unblock</button>
+            `;
+            blockedUsersListDiv.appendChild(blockedUserItem);
+        });
+    }
+
+    // --- Initialization ---
+    // Add demo users
+    function initializeDemoUsers() {
+      const currentDateTime = new Date().toISOString();
+
+      // Demo User 1
+      if (!accounts['TheLimitOfLojani']) { // Only add if not already present from local storage
+          accounts['TheLimitOfLojani'] = {
+            password: 'RenPentagonGolaotaMosotyaCototya83839848398901302',
+            securityQuestion: 'What is the limit?',
+            securityAnswer: 'sky'
+          };
+          users['TheLimitOfLojani'] = {
+            messages: [],
+            profilePic: "https://dinopixel.com/preload/0222/squirtle.png",
+            aboutMe: 'Testing the limits of Lojani.',
+            country: 'Niue',
+            badWordCount: 999999999999,
+            banned: false,
+            deleted: false,
+            spamTracker: {},
+            spamCount: 999999999999999,
+            joinDate: new Date('2001-01-01').toISOString(),
+            isAdmin: true,
+            isPredefinedDemoUser: true, // Renamed and set to true for predefined demos
+            blockList: [],
+            securityQuestion: accounts['TheLimitOfLojani'].securityQuestion,
+            securityAnswer: accounts['TheLimitOfLojani'].securityAnswer
+          };
+      }
+
+
+      // Demo User 2
+      if (!accounts['Amashik - إماسهيك']) {
+          accounts['Amashik - إماسهيك'] = {
+            password: 'securepass',
+            securityQuestion: 'My favorite animal?',
+            securityAnswer: 'cat'
+          };
+          users['Amashik - إماسهيك'] = {
+            messages: [],
+            profilePic: "https://uploads.turbologo.com/uploads/design/preview_image/4503584/preview_image20210705-12182-egrglx.png",
+            aboutMe: 'أنا من أكبر الحسابات في لوجاني، من الأردن وأتحدث العربية.',
+            country: 'Jordan',
+            badWordCount: 3,
+            banned: false,
+            deleted: false,
+            spamTracker: {},
+            spamCount: 0,
+            joinDate: new Date('2019-11-01').toISOString(),
+            isAdmin: false,
+            isPredefinedDemoUser: true, // Renamed and set to true for predefined demos
+            blockList: [],
+            securityQuestion: accounts['Amashik - إماسهيك'].securityQuestion,
+            securityAnswer: accounts['Amashik - إماسهيك'].securityAnswer
+          };
+      }
+
+
+      // Demo User 3 (with a custom profile pic)
+      if (!accounts['Bianka Harold']) {
+          accounts['Bianka Harold'] = {
+            password: 'ilovemom123',
+            securityQuestion: 'First pet name?',
+            securityAnswer: 'buddy'
+          };
+          users['Bianka Harold'] = {
+            messages: [],
+            profilePic: "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png", // Example custom URL
+            aboutMe: 'I love hanging out with my mom. me from Norfolk Island btw.',
+            country: 'Norfolk Island',
+            badWordCount: 0,
+            banned: false,
+            deleted: false,
+            spamTracker: {},
+            spamCount: 0,
+            joinDate: new Date('2023-11-07').toISOString(),
+            isAdmin: false,
+            isPredefinedDemoUser: true, // Renamed and set to true for predefined demos
+            blockList: [],
+            securityQuestion: accounts['Bianka Harold'].securityQuestion,
+            securityAnswer: accounts['Bianka Harold'].securityAnswer
+          };
+      }
+
+
+      // Demo User 4
+      if (!accounts['ى ليارن قوران']) {
+          accounts['ى ليارن قوران'] = {
+            password: 'ى ليارن قوران',
+            securityQuestion: 'My birth city?',
+            securityAnswer: 'riyadh'
+          };
+          users['ى ليارن قوران'] = {
+            messages: [],
+            profilePic: null,
+            aboutMe: 'ى ليارن قوران',
+            country: 'Mauritania',
+            badWordCount: 0,
+            banned: false,
+            deleted: false,
+            spamTracker: {},
+            spamCount: 0,
+            joinDate: new Date('2001-11-10').toISOString(),
+            isAdmin: false,
+            isPredefinedDemoUser: true, // Renamed and set to true for predefined demos
+            blockList: [],
+            securityQuestion: accounts['ى ليارن قوران'].securityQuestion,
+            securityAnswer: accounts['ى ليارن قوران'].securityAnswer
+          };
+      }
+
+
+      // Demo User 5
+      if (!accounts['Fadeo993']) {
+          accounts['Fadeo993'] = {
+            password: 'fadeoISTheBEST',
+            securityQuestion: 'First car model?',
+            securityAnswer: 'honda'
+          };
+          users['Fadeo993'] = {
+            messages: [],
+            profilePic: "https://i.pinimg.com/736x/f4/2b/b6/f42bb65dd04ff0d497940580facee77a.jpg",
+            aboutMe: 'Bem-vindo! Fazendo com que cada dia pareça um abraço caloroso.',
+            country: 'Cabo Verde',
+            badWordCount: 0,
+            banned: false,
+            deleted: false,
+            spamTracker: {},
+            spamCount: 0,
+            joinDate: new Date('2003-09-01').toISOString(),
+            isAdmin: false,
+            isPredefinedDemoUser: true, // Renamed and set to true for predefined demos
+            blockList: [],
+            securityQuestion: accounts['Fadeo993'].securityQuestion,
+            securityAnswer: accounts['Fadeo993'].securityAnswer
+          };
+      }
+
+      // Demo User 6
+      if (!accounts['Lojani']) {
+          accounts['Lojani'] = {
+            password: 'SWjnDSW8BYbr6oC2ysbDD6RqPEMhNQjK2q4xDoWbjF9FDK5Jpw',
+            securityQuestion: 'What is The Password Code?',
+            securityAnswer: '92377873575835255322'
+          };
+          users['Lojani'] = {
+            messages: [],
+            profilePic: "https://png.pngtree.com/png-vector/20220609/ourmid/pngtree-administrator-account-avatar-boss-business-png-image_4941747.png",
+            aboutMe: 'The Official Account of Lojani',
+            country: 'United States',
+            badWordCount: 0,
+            banned: false,
+            deleted: false,
+            spamTracker: {},
+            spamCount: 0,
+            joinDate: new Date('1994-02-12').toISOString(),
+            isAdmin: true,
+            isPredefinedDemoUser: true, // Renamed and set to true for predefined demos
+            blockList: [],
+            securityQuestion: accounts['Lojani'].securityQuestion,
+            securityAnswer: accounts['Lojani'].securityAnswer
+          };
+      }
+      // After initializing, ensure admin status and block list are loaded from local storage for these users too
+      for (const userKey in users) {
+          users[userKey].isAdmin = localStorage.getItem(`isAdmin_${userKey}`) === 'true';
+          const storedBlockList = localStorage.getItem(`blockList_${userKey}`);
+          if (storedBlockList) {
+              users[userKey].blockList = JSON.parse(storedBlockList);
+          } else {
+              users[userKey].blockList = []; // Ensure it's always initialized
+          }
+      }
+    }
+
+
+    // Make sure to show the login screen initially with the 'active' class
+    document.addEventListener('DOMContentLoaded', () => {
+      loadUserData(); // Load user data first
+      initializeDemoUsers(); // Then initialize demo users (will only add if not existing)
+      showLogin(); // This will apply 'active' to the loginScreen
+    });
+  
+function downloadBackup() {
+  const data = {
+    users: localStorage.getItem("users"),
+    accounts: localStorage.getItem("accounts"),
+    messagesData: localStorage.getItem("messagesData")
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'lojani-backup.json';
+  a.click();
+}
+
+function restoreBackup() {
+  const fileInput = document.getElementById('restoreInput');
+  if (!fileInput.files.length) {
+    showAlertModal('No File Selected', 'Please choose a .json backup file.');
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const data = JSON.parse(e.target.result);
+
+      if (!data.users || !data.accounts || !data.messagesData) {
+        showAlertModal('Invalid Backup', 'The backup file is missing required data.');
+        return;
+      }
+
+      localStorage.setItem("users", data.users);
+      localStorage.setItem("accounts", data.accounts);
+      localStorage.setItem("messagesData", data.messagesData);
+
+      loadUserData();
+      showAlertModal('Backup Restored', 'The data was successfully restored. Reloading app...');
+      setTimeout(() => location.reload(), 1500);
+    } catch (err) {
+      showAlertModal('Error', 'Could not parse the backup file.');
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+</script>
+
+
+<script>
+  const bannedCountries = ["Afghanistan", "Algeria", "Brunei", "Iran", "Iraq", "Lebanon", "Libya", "North Korea", "Qatar", "Palestine", "Oman", "Syria", "Yemen"];
+
+  fetch("https://ipinfo.io/json?token=103d8b1329c354")
+    .then(response => response.json())
+    .then(data => {
+      const userCountry = data.country;
+      const fullCountryNames = {
+        "AF": "Afghanistan",
+	"DZ": "Algeria",
+        "BN": "Brunei",
+        "IR": "Iran",
+        "IQ": "Iraq",
+        "LB": "Lebanon",
+        "LY": "Libya",
+        "KP": "North Korea",
+        "QA": "Qatar",
+        "PS": "Palestine",
+        "OM": "Oman",
+        "SY": "Syria",
+        "YE": "Yemen"
+      };
+      if (bannedCountries.includes(fullCountryNames[userCountry])) {
+        const modal = document.createElement("div");
+        modal.style.position = "fixed";
+        modal.style.top = "50%";
+        modal.style.left = "50%";
+        modal.style.transform = "translate(-50%, -50%)";
+        modal.style.background = "white";
+        modal.style.padding = "30px";
+        modal.style.borderRadius = "15px";
+        modal.style.boxShadow = "0 10px 30px rgba(0,0,0,0.2)";
+        modal.style.zIndex = "9999";
+        modal.style.textAlign = "center";
+        modal.innerHTML = "<h2>Sorry</h2><p>Lojani is not available in your country.</p>";
+        document.body.innerHTML = "";
+        document.body.appendChild(modal);
+      }
+    })
+    .catch(error => console.error("GeoIP lookup failed:", error));
+</script>
+
+</body>
+
+</html>
