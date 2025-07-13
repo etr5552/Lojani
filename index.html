@@ -2575,7 +2575,7 @@ function restoreBackup() {
 
 
 <script>
-  const bannedCountries = ["Afghanistan", "Algeria", "Brunei", "Iran", "Iraq", "Lebanon", "Libya", "North Korea", "Qatar", "Palestine", "Oman", "Syria", "Yemen"];
+  const bannedCountries = ["Afghanistan", "Algeria", "Brunei", "Iran", "Iraq", "Lebanon", "Libya", "North Korea", "Qatar", "Palestine", "Oman", "Syria", "Somalia", "Yemen"];
 
   fetch("https://ipinfo.io/json?token=103d8b1329c354")
     .then(response => response.json())
@@ -2594,6 +2594,7 @@ function restoreBackup() {
         "PS": "Palestine",
         "OM": "Oman",
         "SY": "Syria",
+        "SO": "Somalia",
         "YE": "Yemen"
       };
       if (bannedCountries.includes(fullCountryNames[userCountry])) {
