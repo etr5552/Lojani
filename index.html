@@ -610,6 +610,8 @@
       <div class="typing-indicator" id="typingIndicator"></div>
       <input type="text" id="messageInput" placeholder="Type a message..." oninput="showTypingIndicator()" onblur="hideTypingIndicator()">
       <button onclick="sendMessage()">Send</button>
+      <input type="file" id="fileInput">
+      <button onclick="sendFile()">Send File</button>
     </div>
     <button onclick="openSettings()">Settings</button>
     <button onclick="addFakeUser()">Add Fake User</button>
@@ -1627,6 +1629,33 @@ Address: Gen5 Corporation
     }
 
     // --- Messaging ---
+
+function sendFile() {
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
+
+  if (!file || !currentUser) return;
+
+  const fileURL = URL.createObjectURL(file);
+  const timestamp = new Date();
+
+  const fileMessage = {
+    id: Date.now(),
+    sender: currentUser,
+    text: `[FILE] ${file.name}`,
+    timestamp: timestamp.toISOString(),
+    profilePic: users[currentUser].profilePic || 'https://via.placeholder.com/40',
+    fileURL: fileURL,
+    fileName: file.name,
+    fileType: file.type
+  };
+
+  messagesData.push(fileMessage);
+  displayMessages();
+  fileInput.value = '';
+  saveUserData();
+}
+
     function sendMessage() {
       const messageInput = document.getElementById('messageInput');
       let messageText = messageInput.value.trim();
@@ -1717,7 +1746,17 @@ Address: Gen5 Corporation
 
           const messageTextP = document.createElement('p');
           messageTextP.classList.add('message-text');
+          if (message.fileURL) {
+          const fileLink = document.createElement('a');
+          fileLink.href = message.fileURL;
+          fileLink.textContent = `📎 ${message.fileName}`;
+          fileLink.download = message.fileName;
+          fileLink.target = "_blank";
+          fileLink.style.wordBreak = "break-all";
+          messageTextP.appendChild(fileLink);
+        } else {
           messageTextP.textContent = message.text;
+        }
 
           messageContent.appendChild(messageHeader);
           messageContent.appendChild(messageTextP);
