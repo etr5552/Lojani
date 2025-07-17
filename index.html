@@ -614,8 +614,7 @@
       <button onclick="sendFile()">Send File</button>
     </div>
     <button onclick="openSettings()">Settings</button>
-    <button onclick="addFakeUser()">Add Fake User</button>
-    <button onclick="openSearchUserModal()">Search User</button>
+        <button onclick="openSearchUserModal()">Search User</button>
     <button onclick="openBlockedUsersModal()">Blocked Users</button> <div>
       <select id="userSelect" onchange="switchUser()">
         <option value="">Select User</option>
@@ -2204,12 +2203,7 @@ function sendFile() {
     }
 
     // --- Fake User ---
-    function addFakeUser() {
-      // Clear the input field when opening the modal
-      document.getElementById('addFakeUsernameInput').value = '';
-      openModal('addFakeUserModal');
-    }
-
+    
     function confirmAddFakeUser() {
       const fakeUsername = document.getElementById('addFakeUsernameInput').value;
       if (fakeUsername) {
