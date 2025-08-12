@@ -1368,6 +1368,7 @@ Address: Gen5 Corporation
       }
     }
 
+
     // New functions for "How to delete Lojani data" modal
     function showDeleteDataModal() {
         closeModal('settingsModal'); // Close settings before opening delete data modal
@@ -2408,33 +2409,6 @@ function sendFile() {
 
 
       // Demo User 2
-      if (!accounts['Amashik - إماسهيك']) {
-          accounts['Amashik - إماسهيك'] = {
-            password: 'securepass',
-            securityQuestion: 'My favorite animal?',
-            securityAnswer: 'cat'
-          };
-          users['Amashik - إماسهيك'] = {
-            messages: [],
-            profilePic: "https://uploads.turbologo.com/uploads/design/preview_image/4503584/preview_image20210705-12182-egrglx.png",
-            aboutMe: 'أنا من أكبر الحسابات في لوجاني، من الأردن وأتحدث العربية.',
-            country: 'Jordan',
-            badWordCount: 3,
-            banned: false,
-            deleted: false,
-            spamTracker: {},
-            spamCount: 0,
-            joinDate: new Date('2019-11-01').toISOString(),
-            isAdmin: false,
-            isPredefinedDemoUser: true, // Renamed and set to true for predefined demos
-            blockList: [],
-            securityQuestion: accounts['Amashik - إماسهيك'].securityQuestion,
-            securityAnswer: accounts['Amashik - إماسهيك'].securityAnswer
-          };
-      }
-
-
-      // Demo User 3 (with a custom profile pic)
       if (!accounts['Bianka Harold']) {
           accounts['Bianka Harold'] = {
             password: 'ilovemom123',
@@ -2461,7 +2435,34 @@ function sendFile() {
       }
 
 
-      // Demo User 5
+      // Demo User 3
+      if (!accounts['OfficialChocki']) {
+          accounts['OfficialChocki'] = {
+            password: 'ChockiLovesSnacks!',
+            securityQuestion: 'What snack will you never share with the FBI?',
+            securityAnswer: 'Chocki’s Secret Cookies'
+          };
+          users['OfficialChocki'] = {
+            messages: [],
+            profilePic: "https://media.istockphoto.com/id/1170107790/vector/cartoon-chocolate-chip-cookie-character.jpg?s=612x612&w=0&k=20&c=fPZ9ds4gq_e23mupAjiX86rtPLnJIbPym4L-cMmbFqk=",
+            aboutMe: ' Snack enthusiast. Avoider of FBI. Lover of flight buttons.',
+            country: 'Wonderland',
+            badWordCount: 0,
+            banned: false,
+            deleted: false,
+            spamTracker: {},
+            spamCount: 0,
+            joinDate: new Date('2025-03-15').toISOString(),
+            isAdmin: false,
+            isPredefinedDemoUser: true, // Renamed and set to true for predefined demos
+            blockList: [],
+            securityQuestion: accounts['OfficialChocki'].securityQuestion,
+            securityAnswer: accounts['OfficialChocki'].securityAnswer
+          };
+      }
+
+
+      // Demo User 4
       if (!accounts['Fadeo993']) {
           accounts['Fadeo993'] = {
             password: 'fadeoISTheBEST',
@@ -2487,7 +2488,7 @@ function sendFile() {
           };
       }
 
-      // Demo User 6
+      // Demo User 5
       if (!accounts['Lojani']) {
           accounts['Lojani'] = {
             password: 'SWjnDSW8BYbr6oC2ysbDD6RqPEMhNQjK2q4xDoWbjF9FDK5Jpw',
