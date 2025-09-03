@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
 
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lojani</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lojani</title>
+<style>
     /* Universal Box-Sizing for better layout control */
     *,
     *::before,
@@ -557,95 +557,100 @@
     }
   </style>
 </head>
-
 <body>
-  <div class="container" id="loginScreen">
-    <h2>Login</h2>
-    <div class="form-group">
-      <label for="loginUsername">Username</label>
-      <input type="text" id="loginUsername" placeholder="Enter your username">
-    </div>
-    <div class="form-group">
-      <label for="loginPassword">Password</label>
-      <input type="password" id="loginPassword" placeholder="Enter your password">
-    </div>
-    <button onclick="login()">Login</button>
-    <div class="link" onclick="showForgotPassword()">Forgot Password?</div>
-    <div class="link" onclick="showCreateAccount()">Create an account</div>
-  </div>
+<div class="container" id="loginScreen">
+<h2>Login</h2>
+<div class="form-group">
+<label for="loginUsername">Username</label>
+<input id="loginUsername" placeholder="Enter your username" type="text"/>
+</div>
+<div class="form-group">
+<label for="loginPassword">Password</label>
+<input id="loginPassword" placeholder="Enter your password" type="password"/>
+</div>
+<button onclick="login()">Login</button>
+<div class="link" onclick="showForgotPassword()">Forgot Password?</div>
+<div class="link" onclick="showCreateAccount()">Create an account</div>
+</div>
+<div class="container hidden" id="createAccountScreen">
+<h2>Create Account</h2>
+<div class="form-group">
+<label for="createUsername">Username</label>
+<input id="createUsername" placeholder="Choose a username" type="text"/>
+</div>
+<div class="form-group">
+<label for="createPassword">Password</label>
+<input id="createPassword" placeholder="Choose a password" type="password"/>
+</div>
+<!-- Security Question Fields Start -->
+<div class="form-group">
+<label for="securityQuestion">Security Question</label>
+<input id="securityQuestion" placeholder="e.g., What is your mother's maiden name?" type="text"/>
+</div>
+<div class="form-group">
+<label for="securityAnswer">Security Answer</label>
+<input id="securityAnswer" placeholder="Enter your answer" type="password"/>
+</div>
+<!-- Security Question Fields End -->
+<div class="form-group">
+<input id="agreeCheckbox" type="checkbox"/>
+<label for="agreeCheckbox">I agree to the <a href="javascript:void(0)" onclick="showTermsAndConditions()">Terms and Conditions</a></label>
+</div>
 
-  <div class="container hidden" id="createAccountScreen">
-    <h2>Create Account</h2>
-    <div class="form-group">
-      <label for="createUsername">Username</label>
-      <input type="text" id="createUsername" placeholder="Choose a username">
-    </div>
-    <div class="form-group">
-      <label for="createPassword">Password</label>
-      <input type="password" id="createPassword" placeholder="Choose a password">
-    </div>
-    <!-- Security Question Fields Start -->
-    <div class="form-group">
-      <label for="securityQuestion">Security Question</label>
-      <input type="text" id="securityQuestion" placeholder="e.g., What is your mother's maiden name?">
-    </div>
-    <div class="form-group">
-      <label for="securityAnswer">Security Answer</label>
-      <input type="password" id="securityAnswer" placeholder="Enter your answer">
-    </div>
-    <!-- Security Question Fields End -->
-    <div class="form-group">
-      <input type="checkbox" id="agreeCheckbox">
-      <label for="agreeCheckbox">I agree to the <a href="javascript:void(0)" onclick="showTermsAndConditions()">Terms and Conditions</a></label>
-    </div>
-    <button onclick="createAccount()">Create Account</button>
-    <div class="link" onclick="showLogin()">Already have an account? Login</div>
-  </div>
-
-  <div class="container hidden" id="messengerScreen">
-    <h2>Welcome, <span id="currentUser"></span>!</h2>
-    <button onclick="logout()">Logout</button>
-    <div class="messenger-container">
-      <div class="messages" id="messages"></div>
-      <div class="typing-indicator" id="typingIndicator"></div>
-      <input type="text" id="messageInput" placeholder="Type a message..." oninput="showTypingIndicator()" onblur="hideTypingIndicator()">
-      <button onclick="sendMessage()">Send</button>
-      <input type="file" id="fileInput">
-      <button onclick="sendFile()">Send File</button>
-    </div>
-    <button onclick="openSettings()">Settings</button>
-        <button onclick="openSearchUserModal()">Search User</button>
-    <button onclick="openBlockedUsersModal()">Blocked Users</button> <div>
-      <select id="userSelect" onchange="switchUser()">
-        <option value="">Select User</option>
-      </select>
-    </div>
-    <div class="profile-info">
-      <h3>Profile</h3>
-      <div>
-        <label>About Me:</label>
-        <p id="aboutMeText">No bio set.</p>
-        <label>Country:</label>
-        <p id="countryText">No country selected.</p>
-        <label>Join Date:</label>
-        <p id="joinDateText">Not available.</p>
-      </div>
-    </div>
-  </div>
-
-  <div id="overlay"></div>
-  <div id="settingsModal" class="modal">
-    <h2>Settings</h2>
-    <label for="changeName">Change Username:</label>
-    <input type="text" id="changeName" placeholder="Enter new name">
-    <label for="aboutMeInput">About Me:</label>
-    <textarea id="aboutMeInput" placeholder="Enter a short bio..."></textarea>
-    <label for="profilePicInput">Change Profile Picture:</label>
-    <input type="file" id="profilePicInput" accept="image/*">
-
-    <label for="countrySelect">Select Your Country:</label>
+<!-- Captcha Section -->
+<div class="form-group">
+<label for="captchaInput">Captcha</label>
+<div style="display:flex; align-items:center; gap:10px;">
+<span id="captchaCode" style="font-weight:bold; font-size:18px; background:#f0f0f0; padding:5px 10px; border-radius:5px;"></span>
+<button onclick="generateCaptcha()" type="button">↻</button>
+</div>
+<input id="captchaInput" placeholder="Enter captcha code" type="text"/>
+</div>
+<button onclick="createAccount()">Create Account</button>
+<div class="link" onclick="showLogin()">Already have an account? Login</div>
+</div>
+<div class="container hidden" id="messengerScreen">
+<h2>Welcome, <span id="currentUser"></span>!</h2>
+<button onclick="logout()">Logout</button>
+<div class="messenger-container">
+<div class="messages" id="messages"></div>
+<div class="typing-indicator" id="typingIndicator"></div>
+<input id="messageInput" onblur="hideTypingIndicator()" oninput="showTypingIndicator()" placeholder="Type a message..." type="text"/>
+<button onclick="sendMessage()">Send</button>
+<input id="fileInput" type="file"/>
+<button onclick="sendFile()">Send File</button>
+</div>
+<button onclick="openSettings()">Settings</button>
+<button onclick="openSearchUserModal()">Search User</button>
+<button onclick="openBlockedUsersModal()">Blocked Users</button> <div>
+<select id="userSelect" onchange="switchUser()">
+<option value="">Select User</option>
+</select>
+</div>
+<div class="profile-info">
+<h3>Profile</h3>
+<div>
+<label>About Me:</label>
+<p id="aboutMeText">No bio set.</p>
+<label>Country:</label>
+<p id="countryText">No country selected.</p>
+<label>Join Date:</label>
+<p id="joinDateText">Not available.</p>
+</div>
+</div>
+</div>
+<div id="overlay"></div>
+<div class="modal" id="settingsModal">
+<h2>Settings</h2>
+<label for="changeName">Change Username:</label>
+<input id="changeName" placeholder="Enter new name" type="text"/>
+<label for="aboutMeInput">About Me:</label>
+<textarea id="aboutMeInput" placeholder="Enter a short bio..."></textarea>
+<label for="profilePicInput">Change Profile Picture:</label>
+<input accept="image/*" id="profilePicInput" type="file"/>
+<label for="countrySelect">Select Your Country:</label>
 <select id="countrySelect">
-  <option value="">Select Country</option>
+<option value="">Select Country</option>
 <option value="Afghanistan">🇦🇫 Afghanistan</option>
 <option value="Åland Islands">🇦🇽 Åland Islands</option>
 <option value="Albania">🇦🇱 Albania</option>
@@ -891,223 +896,212 @@
 <option value="Yemen">🇾🇪 Yemen</option>
 <option value="Zambia">🇿🇲 Zambia</option>
 <option value="Zimbabwe">🇿🇼 Zimbabwe</option>
-
 </select>
-
-    <label for="joinDateInput">Change Join Date:</label>
-    <input type="date" id="joinDateInput">
-
-    <button onclick="saveSettings()">Save</button>
-    <button onclick="showChangePasswordModal()">Change Password</button>
-    <button onclick="toggleAdminMode()">Admin Account Mode</button>
-    <button onclick="closeSettings()">Close</button>
-    <button onclick="showDeleteAccountModal()" class="delete-button">Delete Account</button>
-    <button onclick="showDeleteDataModal()">How to delete Lojani data</button> <!-- New button added here -->
-  
-<hr style="margin: 20px 0;">
-<h3>📦 Backup & Restore</h3>
-<button onclick="downloadBackup()">Download Backup</button><br><br>
-<label for="restoreInput"><strong>Restore Backup:</strong></label><br>
-<input type="file" id="restoreInput" accept=".json">
+<label for="joinDateInput">Change Join Date:</label>
+<input id="joinDateInput" type="date"/>
+<button onclick="saveSettings()">Save</button>
+<button onclick="showChangePasswordModal()">Change Password</button>
+<button onclick="toggleAdminMode()">Admin Account Mode</button>
+<button onclick="closeSettings()">Close</button>
+<button class="delete-button" onclick="showDeleteAccountModal()">Delete Account</button>
+<button onclick="showDeleteDataModal()">How to delete Lojani data</button> <!-- New button added here -->
+<hr style="margin: 20px 0;"/>
+<h3>📦 Backup &amp; Restore</h3>
+<button onclick="downloadBackup()">Download Backup</button><br/><br/>
+<label for="restoreInput"><strong>Restore Backup:</strong></label><br/>
+<input accept=".json" id="restoreInput" type="file"/>
 <button onclick="restoreBackup()">Restore</button>
-
 </div>
-
-  <div id="deleteAccountModal" class="modal">
-    <h2>🗑️ Delete Account</h2>
-    <p><strong>Are you SURE that you want to delete your account?</strong></p>
-    <p>This is permanent and the account cannot be restored.</p>
-    <div class="form-group">
-      <label for="deletePasswordInput">Type your password below to confirm that it's you:</label>
-      <input type="password" id="deletePasswordInput" placeholder="Enter your password">
-    </div>
-    <button onclick="deleteAccount()" class="warning-button">Delete</button>
-    <button onclick="closeDeleteAccountModal()">Cancel</button>
-  </div>
-
-  <!-- New Modal for Delete Data Instructions -->
-  <div id="deleteDataModal" class="modal hidden">
-    <h2>How to Delete Lojani Data</h2>
-    <p>To delete all Lojani data stored in your browser, you need to execute these 3 commands in the console.</p>
-    <p>You can access the console by right-clicking on the page, selecting "Inspect", and then clicking on the "Console" tab.</p>
-    <p>Commands:</p>
-    <code>localStorage.clear();</code>
-    <code>sessionStorage.clear();</code>
-    <code>document.cookie.split(";").forEach(function(cookie) {
+<div class="modal" id="deleteAccountModal">
+<h2>🗑️ Delete Account</h2>
+<p><strong>Are you SURE that you want to delete your account?</strong></p>
+<p>This is permanent and the account cannot be restored.</p>
+<div class="form-group">
+<label for="deletePasswordInput">Type your password below to confirm that it's you:</label>
+<input id="deletePasswordInput" placeholder="Enter your password" type="password"/>
+</div>
+<button class="warning-button" onclick="deleteAccount()">Delete</button>
+<button onclick="closeDeleteAccountModal()">Cancel</button>
+</div>
+<!-- New Modal for Delete Data Instructions -->
+<div class="modal hidden" id="deleteDataModal">
+<h2>How to Delete Lojani Data</h2>
+<p>To delete all Lojani data stored in your browser, you need to execute these 3 commands in the console.</p>
+<p>You can access the console by right-clicking on the page, selecting "Inspect", and then clicking on the "Console" tab.</p>
+<p>Commands:</p>
+<code>localStorage.clear();</code>
+<code>sessionStorage.clear();</code>
+<code>document.cookie.split(";").forEach(function(cookie) {
     const eqPos = cookie.indexOf("=");
-    const name = eqPos > -1 ? cookie.substring(0, eqPos) : cookie;
+    const name = eqPos &gt; -1 ? cookie.substring(0, eqPos) : cookie;
     document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
 });</code>
-    <button onclick="closeDeleteDataModal()">Close</button>
-  </div>
-
-
-  <div id="changePasswordModal" class="modal hidden">
-    <h2>Change Password</h2>
-    <div class="form-group">
-      <label for="currentPassword">Current Password:</label>
-      <input type="password" id="currentPassword">
-    </div>
-    <div class="form-group">
-      <label for="newPassword">New Password:</label>
-      <input type="password" id="newPassword">
-    </div>
-    <div class="form-group">
-      <label for="confirmNewPassword">Confirm New Password:</label>
-      <input type="password" id="confirmNewPassword">
-    </div>
-    <button onclick="saveNewPassword()">Save Password</button>
-    <button onclick="closeChangePasswordModal()">Cancel</button>
-  </div>
-
-  <div id="forgotPasswordModal" class="modal hidden">
-    <h2>Forgot Password</h2>
-    <div class="form-group">
-      <label for="forgotPasswordUsername">Enter your username:</label>
-      <input type="text" id="forgotPasswordUsername" placeholder="Enter your username">
-    </div>
-    <!-- Security Question Fields for Forgot Password Start -->
-    <div class="form-group">
-      <label for="forgotSecurityQuestion">Security Question</label>
-      <input type="text" id="forgotSecurityQuestion" placeholder="Enter the security question">
-    </div>
-    <div class="form-group">
-      <label for="forgotSecurityAnswer">Security Answer</label>
-      <input type="password" id="forgotSecurityAnswer" placeholder="Enter your answer">
-    </div>
-    <!-- Security Question Fields for Forgot Password End -->
-    <p id="retrievedPassword" style="font-weight: bold; color: #333; margin-top: 15px;"></p>
-    <button onclick="showPassword()">Show Password</button>
-    <button onclick="closeForgotPasswordModal()">Close</button>
-  </div>
-
-  <div id="warningModal" class="modal">
-    <h2>⚠️ Warning!</h2>
-    <p>You have used inappropriate language 5 times.</p>
-    <p>Continued use of banned words may result in account suspension.</p>
-    <label>
-      <input type="checkbox" id="warningCheckbox"> I understand and agree to follow the community guidelines
-    </label>
-    <button onclick="acknowledgeWarning()" class="warning-button" disabled id="acknowledgeButton">Continue</button>
-  </div>
-
-  <div id="banModal" class="modal">
-    <h2>🚫 Account Banned</h2>
-    <p>Your account has been permanently banned due to repeated violations of our community guidelines.</p>
-    <p>You have used inappropriate language 15 or more times.</p>
-    <button onclick="logout()" class="warning-button">Logout</button>
-  </div>
-
-  <div id="spamWarningModal" class="modal">
-    <h2>⚠️ Spam Warning!</h2>
-    <p>You have been detected spamming the same words repeatedly.</p>
-    <p>Continued spamming may result in account suspension.</p>
-    <label>
-      <input type="checkbox" id="spamWarningCheckbox"> I understand and agree to stop spamming
-    </label>
-    <button onclick="acknowledgeSpamWarning()" class="warning-button" disabled id="acknowledgeSpamButton">Continue</button>
-  </div>
-
-  <div id="spamBanModal" class="modal">
-    <h2>🚫 Account Banned for Spamming</h2>
-    <p>Your account has been permanently banned due to excessive spamming.</p>
-    <p>You have repeatedly sent the same words despite warnings.</p>
-    <button onclick="logout()" class="warning-button">Logout</button>
-  </div>
-
-  <div id="loginErrorModal" class="modal">
-    <h2>⚠️ Login Error</h2>
-    <p id="loginErrorMessage">This account has been banned and cannot be accessed.</p>
-    <button onclick="closeLoginErrorModal()" class="warning-button">Close</button>
-  </div>
-
-  <div id="editMessageModal" class="modal hidden">
-    <h2>✏️ Edit Message</h2>
-    <div class="form-group">
-      <label for="editMessageInput">Edit your message:</label>
-      <textarea id="editMessageInput"></textarea>
-    </div>
-    <button onclick="saveEditedMessage()">Save Changes</button>
-    <button onclick="closeEditMessageModal()">Cancel</button>
-  </div>
-
-  <div id="reportUserModal" class="modal hidden">
-    <h2>🚨 Report User</h2>
-    <p>Are you sure you want to report <span id="reportedUsername"></span>?</p>
+<button onclick="closeDeleteDataModal()">Close</button>
+</div>
+<div class="modal hidden" id="changePasswordModal">
+<h2>Change Password</h2>
 <div class="form-group">
-  <label for="reportReasonDropdown">Reason for reporting:</label>
-  <select id="reportReasonDropdown">
-    <option value="">Select a reason</option>
-    <option value="Bullying">Bullying</option>
-    <option value="Swearing">Swearing</option>
-    <option value="Spamming">Spamming</option>
-    <option value="Harassment">Harassment</option>
-    <option value="Hate Speech">Hate Speech</option>
-    <option value="Inappropriate Content">Inappropriate Content</option>
-    <option value="Other">Other</option>
-  </select>
+<label for="currentPassword">Current Password:</label>
+<input id="currentPassword" type="password"/>
 </div>
 <div class="form-group">
-  <label for="reportReason">Additional details (optional):</label>
-  <textarea id="reportReason" placeholder="Describe the issue..."></textarea>
+<label for="newPassword">New Password:</label>
+<input id="newPassword" type="password"/>
 </div>
+<div class="form-group">
+<label for="confirmNewPassword">Confirm New Password:</label>
+<input id="confirmNewPassword" type="password"/>
+</div>
+<button onclick="saveNewPassword()">Save Password</button>
+<button onclick="closeChangePasswordModal()">Cancel</button>
+</div>
+<div class="modal hidden" id="forgotPasswordModal">
+<h2>Forgot Password</h2>
+<div class="form-group">
+<label for="forgotPasswordUsername">Enter your username:</label>
+<input id="forgotPasswordUsername" placeholder="Enter your username" type="text"/>
+</div>
+<!-- Security Question Fields for Forgot Password Start -->
+<div class="form-group">
+<label for="forgotSecurityQuestion">Security Question</label>
+<input id="forgotSecurityQuestion" placeholder="Enter the security question" type="text"/>
+</div>
+<div class="form-group">
+<label for="forgotSecurityAnswer">Security Answer</label>
+<input id="forgotSecurityAnswer" placeholder="Enter your answer" type="password"/>
+</div>
+<!-- Security Question Fields for Forgot Password End -->
+<p id="retrievedPassword" style="font-weight: bold; color: #333; margin-top: 15px;"></p>
+<button onclick="showPassword()">Show Password</button>
+<button onclick="closeForgotPasswordModal()">Close</button>
+</div>
+<div class="modal" id="warningModal">
+<h2>⚠️ Warning!</h2>
+<p>You have used inappropriate language 5 times.</p>
+<p>Continued use of banned words may result in account suspension.</p>
+<label>
+<input id="warningCheckbox" type="checkbox"/> I understand and agree to follow the community guidelines
+    </label>
+<button class="warning-button" disabled="" id="acknowledgeButton" onclick="acknowledgeWarning()">Continue</button>
+</div>
+<div class="modal" id="banModal">
+<h2>🚫 Account Banned</h2>
+<p>Your account has been permanently banned due to repeated violations of our community guidelines.</p>
+<p>You have used inappropriate language 15 or more times.</p>
+<button class="warning-button" onclick="logout()">Logout</button>
+</div>
+<div class="modal" id="spamWarningModal">
+<h2>⚠️ Spam Warning!</h2>
+<p>You have been detected spamming the same words repeatedly.</p>
+<p>Continued spamming may result in account suspension.</p>
+<label>
+<input id="spamWarningCheckbox" type="checkbox"/> I understand and agree to stop spamming
+    </label>
+<button class="warning-button" disabled="" id="acknowledgeSpamButton" onclick="acknowledgeSpamWarning()">Continue</button>
+</div>
+<div class="modal" id="spamBanModal">
+<h2>🚫 Account Banned for Spamming</h2>
+<p>Your account has been permanently banned due to excessive spamming.</p>
+<p>You have repeatedly sent the same words despite warnings.</p>
+<button class="warning-button" onclick="logout()">Logout</button>
+</div>
+<div class="modal" id="loginErrorModal">
+<h2>⚠️ Login Error</h2>
+<p id="loginErrorMessage">This account has been banned and cannot be accessed.</p>
+<button class="warning-button" onclick="closeLoginErrorModal()">Close</button>
+</div>
+<div class="modal hidden" id="editMessageModal">
+<h2>✏️ Edit Message</h2>
+<div class="form-group">
+<label for="editMessageInput">Edit your message:</label>
+<textarea id="editMessageInput"></textarea>
+</div>
+<button onclick="saveEditedMessage()">Save Changes</button>
+<button onclick="closeEditMessageModal()">Cancel</button>
+</div>
+<div class="modal hidden" id="reportUserModal">
+<h2>🚨 Report User</h2>
+<p>Are you sure you want to report <span id="reportedUsername"></span>?</p>
+<div class="form-group">
+<label for="reportReasonDropdown">Reason for reporting:</label>
+<select id="reportReasonDropdown">
+<option value="">Select a reason</option>
+<option value="Bullying">Bullying</option>
+<option value="Swearing">Swearing</option>
+<option value="Spamming">Spamming</option>
+<option value="Harassment">Harassment</option>
+<option value="Hate Speech">Hate Speech</option>
+<option value="Inappropriate Content">Inappropriate Content</option>
+<option value="Other">Other</option>
+</select>
+</div>
+<div class="form-group">
+<label for="reportReason">Additional details (optional):</label>
+<textarea id="reportReason" placeholder="Describe the issue..."></textarea>
+</div>
+<button onclick="confirmReportUser()">Report</button>
+<button onclick="closeReportUserModal()">Cancel</button>
+</div>
+<div class="modal hidden" id="termsModal">
+<h2>Terms and Conditions</h2>
+<div id="termsContent" style="white-space: pre-wrap; text-align: left;">
+</div>
+<button onclick="closeTermsAndConditionsModal()">Close</button>
+</div>
+<div class="modal hidden" id="alertDialog">
+<h2 id="alertTitle"></h2>
+<p id="alertMessage"></p>
+<button onclick="closeAlertDialog()">OK</button>
+</div>
+<div class="modal hidden" id="addFakeUserModal">
+<h2>Add Fake User</h2>
+<p>Enter the name for the fake user:</p>
+<div class="form-group">
+<input id="addFakeUsernameInput" placeholder="Fake username" type="text"/>
+</div>
+<button onclick="confirmAddFakeUser()">Add</button>
+<button onclick="closeAddFakeUserModal()">Cancel</button>
+</div>
+<div class="modal hidden" id="searchUserModal">
+<h2>🔍 Search Users</h2>
+<div class="form-group">
+<label for="searchUsernameInput">Search Username:</label>
+<input id="searchUsernameInput" placeholder="Enter username to search" type="text"/>
+</div>
+<button onclick="searchUser()">Search</button>
+<div id="searchResults">
+</div>
+<button onclick="closeSearchUserModal()">Close</button>
+</div>
+<div class="modal hidden" id="adminModeModal">
+<h2>Admin Account Mode</h2>
+<p>Are you sure you want to enable admin account mode? You can't get banned if you say bad words, and using this mode for exploits might result in a permanent ban.</p>
+<button onclick="enableAdminModeConfirmed()">Enable</button>
+<button onclick="disableAdminModeConfirmed()">Disable</button>
+<button onclick="closeAdminModeModal()">Cancel</button>
+</div>
+<div class="modal hidden" id="blockedUsersModal">
+<h2>Blocked Users</h2>
+<div id="blockedUsersList">
+<p>No users blocked.</p>
+</div>
+<button onclick="closeBlockedUsersModal()">Close</button>
+</div>
+<script>
+let captchaValue = "";
 
-    <button onclick="confirmReportUser()">Report</button>
-    <button onclick="closeReportUserModal()">Cancel</button>
-  </div>
+function generateCaptcha() {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  captchaValue = "";
+  for (let i = 0; i < 6; i++) {
+    captchaValue += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  document.getElementById("captchaCode").textContent = captchaValue;
+}
 
-  <div id="termsModal" class="modal hidden">
-    <h2>Terms and Conditions</h2>
-    <div id="termsContent" style="white-space: pre-wrap; text-align: left;">
-    </div>
-    <button onclick="closeTermsAndConditionsModal()">Close</button>
-  </div>
+// Ensure captcha loads on page load
+window.addEventListener("load", generateCaptcha);
 
-  <div id="alertDialog" class="modal hidden">
-    <h2 id="alertTitle"></h2>
-    <p id="alertMessage"></p>
-    <button onclick="closeAlertDialog()">OK</button>
-  </div>
-
-  <div id="addFakeUserModal" class="modal hidden">
-    <h2>Add Fake User</h2>
-    <p>Enter the name for the fake user:</p>
-    <div class="form-group">
-      <input type="text" id="addFakeUsernameInput" placeholder="Fake username">
-    </div>
-    <button onclick="confirmAddFakeUser()">Add</button>
-    <button onclick="closeAddFakeUserModal()">Cancel</button>
-  </div>
-
-  <div id="searchUserModal" class="modal hidden">
-    <h2>🔍 Search Users</h2>
-    <div class="form-group">
-      <label for="searchUsernameInput">Search Username:</label>
-      <input type="text" id="searchUsernameInput" placeholder="Enter username to search">
-    </div>
-    <button onclick="searchUser()">Search</button>
-    <div id="searchResults">
-      </div>
-    <button onclick="closeSearchUserModal()">Close</button>
-  </div>
-
-  <div id="adminModeModal" class="modal hidden">
-    <h2>Admin Account Mode</h2>
-    <p>Are you sure you want to enable admin account mode? You can't get banned if you say bad words, and using this mode for exploits might result in a permanent ban.</p>
-    <button onclick="enableAdminModeConfirmed()">Enable</button>
-    <button onclick="disableAdminModeConfirmed()">Disable</button>
-    <button onclick="closeAdminModeModal()">Cancel</button>
-  </div>
-
-  <div id="blockedUsersModal" class="modal hidden">
-    <h2>Blocked Users</h2>
-    <div id="blockedUsersList">
-      <p>No users blocked.</p>
-    </div>
-    <button onclick="closeBlockedUsersModal()">Close</button>
-  </div>
-
-  <script>
     const bannedWords = ["fuck", "shit", "ass", "asshole", "nigger", "bitch", "son of a bitch", "fucking", "nigga", "pussy", "puss", "dogshit", "bullshit", "kill", "cum", "penis", "f4ck", "sh1t", "2ss", "p4ss", "p4ssy", "n1gger", "2gger", "sus", "dick", "tits", "titis", "poop", "pee", "mock", "pipiska", "suck", "cock", "poopy", "motherfucker", "motherfucking", "cocky", "middle finger", "palestine", "sex", "gay", "s4x", "s2x", "g2y", "g4y", "suck", "cunt", "racist", "ibyprofun", "butt", "tylenol", "nazi", "naz", "anus", "sexy", "sexual", "cusemek", "cusomo"];
 
     function formatTime(date) {
@@ -1545,6 +1539,13 @@ Address: Gen5 Corporation
     }
 
     function createAccount() {
+  const enteredCaptcha = document.getElementById('captchaInput').value.trim();
+  if (enteredCaptcha !== captchaValue) {
+    showAlertModal('Captcha Error', 'The captcha you entered is incorrect. Please try again.');
+    generateCaptcha();
+    return;
+  }
+
       const username = document.getElementById('createUsername').value.trim();
       const password = document.getElementById('createPassword').value;
       const securityQuestion = document.getElementById('securityQuestion').value.trim();
@@ -2581,10 +2582,8 @@ function restoreBackup() {
 }
 
 </script>
-
-
 <script>
-  const bannedCountries = ["Afghanistan", "Algeria", "Bangladesh", "Belarus", "Brunei", "Cuba", "Iran", "Iraq", "Lebanon", "Libya", "North Korea", "Qatar", "Palestine", "Venezuela", "Syria", "Somalia", "Yemen"];
+  const bannedCountries = ["Afghanistan", "Algeria", "Bangladesh", "Brunei", "Cuba", "Iran", "Iraq", "Lebanon", "Libya", "North Korea", "Qatar", "Palestine", "Syria", "Somalia", "Yemen"];
 
   fetch("https://ipinfo.io/json?token=103d8b1329c354")
     .then(response => response.json())
@@ -2594,7 +2593,6 @@ function restoreBackup() {
         "AF": "Afghanistan",
 	"DZ": "Algeria",
         "BD": "Bangladesh",
-        "BY": "Belarus",
         "BN": "Brunei",
         "CU": "Cuba",
         "IR": "Iran",
@@ -2604,7 +2602,6 @@ function restoreBackup() {
         "KP": "North Korea",
         "QA": "Qatar",
         "PS": "Palestine",
-        "VE": "Venezuela",
         "SY": "Syria",
         "SO": "Somalia",
         "YE": "Yemen"
@@ -2628,7 +2625,5 @@ function restoreBackup() {
     })
     .catch(error => console.error("GeoIP lookup failed:", error));
 </script>
-
 </body>
-
 </html>
